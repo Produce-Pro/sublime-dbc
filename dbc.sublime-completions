@@ -1,0 +1,26 @@
+    {
+        "scope": "source.dbc",
+        "completions": [
+            // Control
+            { "trigger": "GOTO", "contents": "GOTO ${1:LABEL}" },
+            { "trigger": "CALL", "contents": "CALL ${1:LABEL}" },
+            { "trigger": "IF", "contents": "IF ($1) $2ENDIF" },
+            { "trigger": "LOOP", "contents": "LOOP $1REPEAT" },
+            { "trigger": "FOR", "contents": "FOR ${1:VAR} FROM ${2:NUM/VAR} TO ${4:NUM/VAR} $4REPEAT" },
+
+
+            // Functions
+            { "trigger": "MOVE", "contents": "MOVE ${1:#VAR} TO ${2:#VAR}" },
+            { "trigger": "PACK", "contents": "PACK ${1:#VAR} WITH ${2:#VAR}, ${3:#VAR}" }
+
+
+            // Variables
+      ]
+}
+
+
+
+
+
+
+

@@ -1,0 +1,34 @@
+{
+	// The number of spaces a tab is considered equal to
+	"tab_size": 5,
+
+    // Set to true to insert spaces when tab is pressed
+    "translate_tabs_to_spaces": false,
+
+	// Characters that are considered to separate words
+    "word_separators": "/\\()\"'-:,;<>~!#%^&*|+=[]{}`~?",
+
+	// The encoding to use when the encoding can't be determined automatically.
+	// ASCII, UTF-8 and UTF-16 encodings will be automatically detected.
+	//"fallback_encoding": "UTF-8",
+	"fallback_encoding": "Western (ISO 8859-15)",
+
+	// Encoding used when saving new files, and files opened with an undefined
+	// encoding (e.g., plain ascii files). If a file is opened with a specific
+	// encoding (either detected or given explicitly), this setting will be
+	// ignored, and the file will be saved with the encoding it was opened
+	// with.
+	"default_encoding": "Western (ISO 8859-15)",
+
+	// Determines what character(s) are used to terminate each line in new files.
+	// Valid values are 'system' (whatever the OS uses), 'windows' (CRLF) and
+	// 'unix' (LF only).
+	"default_line_ending": "unix",
+
+	// Set to true to removing trailing white space on save
+    "trim_trailing_white_space_on_save": true,
+
+    // Set to true to ensure the last line of the file ends in a newline
+    // character when saving
+    "ensure_newline_at_eof_on_save": true
+}
