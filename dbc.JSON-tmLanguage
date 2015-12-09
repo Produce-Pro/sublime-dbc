@@ -4,7 +4,7 @@
   "uuid": "822facbe-dd9d-4215-ab1d-d10a061a28ef",
   "patterns": [
   	{
-		"match": "^\\s*(INC)\\s*(.*)",
+		"match": "^\\s+(INC)\\s*(.*)",
 		"name": "meta.import.dbc",
 		"captures": {
 			"1": {
@@ -54,7 +54,7 @@
 			  	},
 			  	{
 					"name": "keyword.control.dbc",
-			 	  	"match": "\\s+(RETURN|GOTO|CALL|PERFORM)\\b"
+			 	  	"match": "\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH)\\b"
 			  	},
 			  	{
 					"name": "keyword.control.dbc",
@@ -73,7 +73,7 @@
 			 	  	"match": "\\b(AND|OR|NOT)\\b"
 			  	},
 			  	{
-					"name": "storage.type.function.dbc",
+					"name": "entity.name.function.dbc",
 			 	  	"match": "\\b(ROUTINE|ENDROUTINE|LROUTINE|VERB)\\b"
 			  	},
 			  	{
@@ -86,7 +86,7 @@
 				},
 				{
 					"name": "keyword.operator.assignment.dbc",
-					"match": "\\s+(TO|FROM|WITH|OF|IN)\\s+"
+					"match": "\\s+(TO|FROM|WITH|OF|IN|INTO)\\s+"
 				}
 			]
 		},
@@ -214,7 +214,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR)\\s+"
+					"match": "^\\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -226,7 +226,39 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "\\b(CHOP|SQUEEZE)\\s+"
+					"match": "^\\s+(DISPLAY|SCRNSAVE|SCRNREST|DSPFNC|STATESAVE|STATEREST)\\s+"
+				},
+				{
+					"name": "entity.name.function.dbc",
+					"match": "\\b(CHOP|SQUEEZE|TRIM)\\s+"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "^\\s+\\b(.\\.)?QUERY\\..{3,4}\\b"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "\\b\\b(.\\.)?NEXT\\..{3,4}\\b"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "\\b(.\\.)?(CL|BK|RD|RT|RK|PT|WT|OD|RL|UL).{2,4}\\b"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "^\\s+(TSTAMP|DATE)\\b"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "^\\s+(LMOD|ULMOD)\\s+"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "^\\s+(NOBLANK|NOZERO)\\s+"
+				},
+				{
+					"name": "support.function.dbc",
+					"match": "^\\s+(NOBLANK|NOZERO)\\s+"
 				}
 
 
