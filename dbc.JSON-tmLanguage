@@ -3,7 +3,7 @@
   "fileTypes": ["TXT","PRG","VRB"],
   "uuid": "822facbe-dd9d-4215-ab1d-d10a061a28ef",
   "patterns": [
-  	{
+	{
 		"match": "^\\s+(INC)\\s*(.*)",
 		"name": "meta.import.dbc",
 		"captures": {
@@ -21,9 +21,9 @@
 
 	},
 
-  	{
+	{
 
-  	}
+	}
 	],
 	"repository": {
 		"code": {
@@ -50,37 +50,37 @@
 			"patterns": [
 				{
 					"name": "keyword.control.dbc",
-			 	  	"match": "\\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\\b"
-			  	},
-			  	{
+					"match": "\\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\\b"
+				},
+				{
 					"name": "keyword.control.dbc",
-			 	  	"match": "\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH)\\b"
-			  	},
-			  	{
+					"match": "\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\\s+"
+				},
+				{
 					"name": "keyword.control.dbc",
-			 	  	"match": "\\s+(IF|ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\\b"
-			  	},
-			  	{
+					"match": "\\s+(IF|ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\\b"
+				},
+				{
 					"name": "keyword.control.dbc",
-			 	  	"match": "\\s+#(IF|ELSE|ENDIF).*"
-			  	},
-			  	{
+					"match": "\\s+#(IF|ELSE|ENDIF).*"
+				},
+				{
 					"name": "keyword.operator.arithmetic.dbc",
-			 	  	"match": "(\\-|\\+|\\*|\\/|%)"
-			  	},
-			  	{
+					"match": "(\\-|\\+|\\*|\\/|%)"
+				},
+				{
 					"name": "keyword.operator.logical.dbc",
-			 	  	"match": "\\b(AND|OR|NOT)\\b"
-			  	},
-			  	{
+					"match": "\\s(AND|OR|NOT)\\s"
+				},
+				{
 					"name": "entity.name.function.dbc",
-			 	  	"match": "\\b(ROUTINE|ENDROUTINE|LROUTINE|VERB)\\b"
-			  	},
-			  	{
+					"match": "\\s(ROUTINE|ENDROUTINE|LROUTINE|VERB)\\s"
+				},
+				{
 					"name": "keyword.operator.comparison.dbc",
-			 	  	"match": "(=|!=|<=|>=|<>|<|>)"
-			  	},
-			  	{
+					"match": "(=|!=|<=|>=|<>|<|>)"
+				},
+				{
 					"name": "keyword.operator.assignment.dbc",
 					"match": ","
 				},
@@ -162,21 +162,22 @@
 		"verb-types": {
 			"patterns": [
 				{
-					"match": "\\b(CVARLIT|NVARLIT|CVAR|NVAR|CNVARLIT|CNVAR|ANY|VAR|VARLIT)\\b",
-					"name": "storage.type.verb.dbc"
-				},
-
-				{
-					"match": "\\b(LIST|LABEL|ARRAY|QUEUE|OBJECT)\\b",
-					"name": "storage.type.verb.dbc"
+					"match": "\\b(CVARLIT|NVARLIT|CVAR|NVAR|CNVARLIT|CNVAR|ANY|VAR|VARLIT)\\b(\\s|,|:)",
+					"captures" : {
+						"1" : { "name" : "storage.type.verb.dbc" }
+					}
 				},
 				{
-					"match": "\\b(CARRAY|NVARRAY|NARRAY)[1-3]\\b",
-					"name": "storage.type.verb.dbc"
+					"match": "\\b(LABEL|ARRAY|QUEUE|OBJECT)\\b(\\s|,|:)",
+					"captures" : {
+						"1" : { "name" : "storage.type.verb.dbc" }
+					}
 				},
 				{
-					"match": "\\b(AFILE|IMAGE|FILE|IFILE|PFILE|DEVICE|RESOURCE)\\b",
-					"name": "storage.type.verb.dbc"
+					"match": "\\b(CARRAY|NVARRAY|NARRAY)[1-3]\\b(\\s|,|:)",
+					"captures" : {
+						"1" : { "name" : "storage.type.verb.dbc" }
+					}
 				}
 
 			]
@@ -186,7 +187,15 @@
 		"primative-types": {
 			"patterns": [
 				{
-					"match": "\\b(?:CHAR|INT|FORM|DIM|NUM|INIT|EXTERNAL|EQU)\\b",
+					"match": "\\s(?:CHAR|INT|FORM|DIM|NUM|INIT|EXTERNAL|EQU)\\s",
+					"name": "storage.type.primative.dbc"
+				},
+				{
+					"match": "\\s(LABEL|ARRAY|QUEUE|OBJECT)\\s",
+					"name": "storage.type.primative.dbc"
+				},
+				{
+					"match": "\\s(AFILE|IMAGE|FILE|IFILE|PFILE|DEVICE|RESOURCE|LIST)\\s",
 					"name": "storage.type.primative.dbc"
 				}
 
@@ -234,19 +243,15 @@
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "^\\s+\\b(.\\.)?QUERY\\..{3,4}\\b"
+					"match": "^\\s+\\b(.\\.)?QUERY\\..{3,5}\\s"
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "\\b\\b(.\\.)?NEXT\\..{3,4}\\b"
+					"match": "\\b\\b(.\\.)?NEXT\\..{3,5}\\s"
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "\\b(.\\.)?(CL|BK|RD|RT|RK|PT|WT|OD|RL|UL).{2,4}\\b"
-				},
-				{
-					"name": "support.function.dbc",
-					"match": "^\\s+(TSTAMP|DATE)\\b"
+					"match": "^\\s+(TSTAMP|DATE|ELAPSED)\\b"
 				},
 				{
 					"name": "support.function.dbc",
@@ -258,7 +263,7 @@
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "^\\s+(NOBLANK|NOZERO)\\s+"
+					"match": "^\\s+(RETURN.EOS|RETURN.NOTEOS)\\s+"
 				}
 
 
