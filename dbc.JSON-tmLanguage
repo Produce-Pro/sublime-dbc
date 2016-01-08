@@ -50,19 +50,19 @@
 			"patterns": [
 				{
 					"name": "keyword.control.dbc",
-					"match": "\\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\\b"
+					"match": "^\\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\\b"
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\\s+"
+					"match": "^\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\\s+"
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "\\s+(IF|ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\\b"
+					"match": "^\\s+(ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\\s+"
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "\\s+#(IF|ELSE|ENDIF).*"
+					"match": "(?<!\\w|\\.|\\$)IF(?!\\w|\\.|\\$)"
 				},
 				{
 					"name": "keyword.operator.arithmetic.dbc",
@@ -74,7 +74,7 @@
 				},
 				{
 					"name": "keyword.operator.logical.dbc",
-					"match": "\\s(AND|OR|NOT)\\s"
+					"match": "(?<!\\w|\\.|\\$)(AND|OR|NOT)(?!\\w|\\.|\\$)"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -156,10 +156,8 @@
 		"flags": {
 			"patterns": [
 				{
-					"match": "(\\s|\\(|,)(EOS|OVER|EQUAL|LESS|NULL)(\\s|\\)|,)",
-						"captures" : {
-						"2" : { "name" : "storage.type.flags.dbc" }
-					}
+					"match": "(?<!\\w|\\.|\\$)(EOS|OVER|EQUAL|LESS|NULL)(?!\\w|\\.|\\$)",
+					"name" : "storage.type.flags.dbc"
 				},
 				{
 					"match": "\\s+(DEBUG)\\s+",
@@ -197,7 +195,7 @@
 		"primative-types": {
 			"patterns": [
 				{
-					"match": "\\s(?:CHAR|INT|FORM|DIM|NUM|INIT|EXTERNAL|EQU)\\s",
+					"match": "\\s(?:CHAR|FORM|EXTERNAL|EQU)\\s",
 					"name": "storage.type.primative.dbc"
 				},
 				{
@@ -206,6 +204,10 @@
 				},
 				{
 					"match": "\\s(AFILE|IMAGE|FILE|IFILE|PFILE|DEVICE|RESOURCE|LIST)\\s",
+					"name": "storage.type.primative.dbc"
+				},
+				{
+					"match": "\\s(GCHAR|GFORM)\\s",
 					"name": "storage.type.primative.dbc"
 				}
 
@@ -225,7 +227,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(ADD|SUB|MULT|DIVIDE)\\s+"
+					"match": "^\\s+(ADD|SUB|MULT|DIVIDE|MOD)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -233,7 +235,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP)\\s+"
+					"match": "^\\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -241,7 +243,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT)\\s+"
+					"match": "^\\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -250,6 +252,10 @@
 				{
 					"name": "entity.name.function.dbc",
 					"match": "\\b(CHOP|SQUEEZE|TRIM)\\s+"
+				},
+				{
+					"name": "entity.name.function.dbc",
+					"match": "^\\s+#(IFDEF|IFNDEF|ENDIF)\\s+"
 				},
 				{
 					"name": "support.function.dbc",
@@ -261,7 +267,7 @@
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "^\\s+(TSTAMP|DATE|ELAPSED)\\b"
+					"match": "^\\s+(TSTAMP|DATE|ELAPSED|MESSAGE)\\b"
 				},
 				{
 					"name": "support.function.dbc",

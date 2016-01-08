@@ -119,7 +119,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(ADD|SUB|MULT|DIVIDE)\s+</string>
+					<string>^\s+(ADD|SUB|MULT|DIVIDE|MOD)\s+</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>
@@ -131,7 +131,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP)\s+</string>
+					<string>^\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT)\s+</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>
@@ -143,7 +143,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT)\s+</string>
+					<string>^\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD)\s+</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>
@@ -161,6 +161,12 @@
 				</dict>
 				<dict>
 					<key>match</key>
+					<string>^\s+#(IFDEF|IFNDEF|ENDIF)\s+</string>
+					<key>name</key>
+					<string>entity.name.function.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>^\s+\b(.\.)?QUERY\..{3,5}\s</string>
 					<key>name</key>
 					<string>support.function.dbc</string>
@@ -173,7 +179,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(TSTAMP|DATE|ELAPSED)\b</string>
+					<string>^\s+(TSTAMP|DATE|ELAPSED|MESSAGE)\b</string>
 					<key>name</key>
 					<string>support.function.dbc</string>
 				</dict>
@@ -202,16 +208,10 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>storage.type.flags.dbc</string>
-						</dict>
-					</dict>
 					<key>match</key>
-					<string>(\s|\(|,)(EOS|OVER|EQUAL|LESS|NULL)(\s|\)|,)</string>
+					<string>(?&lt;!\w|\.|\$)(EOS|OVER|EQUAL|LESS|NULL)(?!\w|\.|\$)</string>
+					<key>name</key>
+					<string>storage.type.flags.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -237,25 +237,25 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\b</string>
+					<string>^\s+(LOOP|WHILE|DO|FOR|REPEAT|CONTINUE|BREAK|UNTIL)\b</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\s+</string>
+					<string>^\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\s+</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+(IF|ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\b</string>
+					<string>^\s+(ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+#(IF|ELSE|ENDIF).*</string>
+					<string>(?&lt;!\w|\.|\$)IF(?!\w|\.|\$)</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
@@ -273,7 +273,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s(AND|OR|NOT)\s</string>
+					<string>(?&lt;!\w|\.|\$)(AND|OR|NOT)(?!\w|\.|\$)</string>
 					<key>name</key>
 					<string>keyword.operator.logical.dbc</string>
 				</dict>
@@ -315,7 +315,7 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\s(?:CHAR|INT|FORM|DIM|NUM|INIT|EXTERNAL|EQU)\s</string>
+					<string>\s(?:CHAR|FORM|EXTERNAL|EQU)\s</string>
 					<key>name</key>
 					<string>storage.type.primative.dbc</string>
 				</dict>
@@ -328,6 +328,12 @@
 				<dict>
 					<key>match</key>
 					<string>\s(AFILE|IMAGE|FILE|IFILE|PFILE|DEVICE|RESOURCE|LIST)\s</string>
+					<key>name</key>
+					<string>storage.type.primative.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\s(GCHAR|GFORM)\s</string>
 					<key>name</key>
 					<string>storage.type.primative.dbc</string>
 				</dict>
