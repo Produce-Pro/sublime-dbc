@@ -202,10 +202,16 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.flags.dbc</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>\s+(EOS|OVER|EQUAL|LESS)</string>
-					<key>name</key>
-					<string>storage.type.flags.dbc</string>
+					<string>(\s|\(|,)(EOS|OVER|EQUAL|LESS|NULL)(\s|\)|,)</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -261,6 +267,12 @@
 				</dict>
 				<dict>
 					<key>match</key>
+					<string>\b[0-9]+\.*[0-9]*\b</string>
+					<key>name</key>
+					<string>keyword.constant.numeric</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>\s(AND|OR|NOT)\s</string>
 					<key>name</key>
 					<string>keyword.operator.logical.dbc</string>
@@ -276,6 +288,12 @@
 					<string>(=|!=|&lt;=|&gt;=|&lt;&gt;|&lt;|&gt;)</string>
 					<key>name</key>
 					<string>keyword.operator.comparison.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(\[|\])</string>
+					<key>name</key>
+					<string>meta.arrayindex.meta</string>
 				</dict>
 				<dict>
 					<key>match</key>

@@ -69,6 +69,10 @@
 					"match": "(\\-|\\+|\\*|\\/|%)"
 				},
 				{
+					"name": "keyword.constant.numeric",
+					"match": "\\b[0-9]+\\.*[0-9]*\\b"
+				},
+				{
 					"name": "keyword.operator.logical.dbc",
 					"match": "\\s(AND|OR|NOT)\\s"
 				},
@@ -79,6 +83,10 @@
 				{
 					"name": "keyword.operator.comparison.dbc",
 					"match": "(=|!=|<=|>=|<>|<|>)"
+				},
+				{
+					"name": "meta.arrayindex.meta",
+					"match": "(\\[|\\])"
 				},
 				{
 					"name": "keyword.operator.assignment.dbc",
@@ -148,8 +156,10 @@
 		"flags": {
 			"patterns": [
 				{
-					"match": "\\s+(EOS|OVER|EQUAL|LESS)",
-					"name": "storage.type.flags.dbc"
+					"match": "(\\s|\\(|,)(EOS|OVER|EQUAL|LESS|NULL)(\\s|\\)|,)",
+						"captures" : {
+						"2" : { "name" : "storage.type.flags.dbc" }
+					}
 				},
 				{
 					"match": "\\s+(DEBUG)\\s+",
