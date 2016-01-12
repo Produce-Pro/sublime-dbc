@@ -62,7 +62,7 @@
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "(?<!\\w|\\.|\\$)IF(?!\\w|\\.|\\$)"
+					"match": "(?<!\\w|\\.|\\$)IF(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "keyword.operator.arithmetic.dbc",
@@ -74,11 +74,11 @@
 				},
 				{
 					"name": "keyword.operator.logical.dbc",
-					"match": "(?<!\\w|\\.|\\$)(AND|OR|NOT)(?!\\w|\\.|\\$)"
+					"match": "(?<!\\w|\\.|\\$)(AND|OR|NOT)(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "\\s(ROUTINE|ENDROUTINE|LROUTINE|VERB)\\s"
+					"match": "(?<!\\w|\\.|\\$)(ROUTINE|ENDROUTINE|LROUTINE|VERB)(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "keyword.operator.comparison.dbc",
@@ -156,7 +156,7 @@
 		"flags": {
 			"patterns": [
 				{
-					"match": "(?<!\\w|\\.|\\$)(EOS|OVER|EQUAL|LESS|NULL)(?!\\w|\\.|\\$)",
+					"match": "(?<!\\w|\\.|\\$)(EOS|OVER|EQUAL|LESS|NULL)(?!\\w|\\.|\\$|=)",
 					"name" : "storage.type.flags.dbc"
 				},
 				{
