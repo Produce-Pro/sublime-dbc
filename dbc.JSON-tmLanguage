@@ -170,19 +170,19 @@
 		"verb-types": {
 			"patterns": [
 				{
-					"match": "\\b(CVARLIT|NVARLIT|CVAR|NVAR|CNVARLIT|CNVAR|ANY|VAR|VARLIT)\\b(\\s|,|:)",
+					"match": "(?<!\\w|\\.|\\$)(CVARLIT|NVARLIT|CVAR|NVAR|CNVARLIT|CNVAR|ANY|VAR|VARLIT)\\b(\\s|,|:)",
 					"captures" : {
 						"1" : { "name" : "storage.type.verb.dbc" }
 					}
 				},
 				{
-					"match": "\\b(LABEL|ARRAY|QUEUE|OBJECT)\\b(\\s|,|:)",
+					"match": "(?<!\\w|\\.|\\$)(LABEL|ARRAY|QUEUE|OBJECT)(?!\\w|\\.|\\$|=)",
 					"captures" : {
 						"1" : { "name" : "storage.type.verb.dbc" }
 					}
 				},
 				{
-					"match": "\\b(CARRAY|NVARRAY|NARRAY)[1-3]\\b(\\s|,|:)",
+					"match": "(?<!\\w|\\.|\\$)(CARRAY|NVARRAY|NARRAY)[1-3](?!\\w|\\.|\\$|=)",
 					"captures" : {
 						"1" : { "name" : "storage.type.verb.dbc" }
 					}
@@ -239,7 +239,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL)\\s+"
+					"match": "^\\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
