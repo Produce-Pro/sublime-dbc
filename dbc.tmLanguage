@@ -137,7 +137,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL)\s+</string>
+					<string>^\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\.YN)\s+</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>

@@ -239,7 +239,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL)\\s+"
+					"match": "^\\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\\.YN)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
