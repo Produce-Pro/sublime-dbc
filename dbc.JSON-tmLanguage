@@ -243,7 +243,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^\\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD)\\s+"
+					"match": "^\\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT)\\s+"
 				},
 				{
 					"name": "entity.name.function.dbc",
@@ -267,7 +267,7 @@
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "^\\s+(TSTAMP|DATE|ELAPSED|MESSAGE)\\b"
+					"match": "^\\s+(TSTAMP|DATE|TIME|ELAPSED|MESSAGE)\\b"
 				},
 				{
 					"name": "support.function.dbc",
