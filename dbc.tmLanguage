@@ -106,10 +106,6 @@
 			<key>patterns</key>
 			<array>
 				<dict>
-					<key>match</key>
-					<string>^\s+(CLEAR|CMOVE|SET)\s+</string>
-				</dict>
-				<dict>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -124,43 +120,13 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^\s+(MOVE|PACK|UNPACK|LOAD|FILL|APPEND|PACKLEN|STORE)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))</string>
+					<string>^\s+(MOVE|PACK|UNPACK|LOAD|FILL|APPEND|PACKLEN|STORE|CLEAR|CMOVE|SET|MOVEFPTR|MOVELPTR|BUMP|RESET|LENSET|REPLACE|REP|SETLPTR|SETFPTR|ADD|SUB|MULT|DIVIDE|MOD|SEARCH|SCAN|MATCH|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT|TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\.YN|WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT|UPDATE|FPOSIT)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))?</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(MOVEFPTR|MOVELPTR|BUMP|RESET|LENSET|REPLACE|REP|SETLPTR|SETFPTR)\s+</string>
+					<string>^\s+(SETFLAG)\s+</string>
 					<key>name</key>
 					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(ADD|SUB|MULT|DIVIDE|MOD)\s+</string>
-					<key>name</key>
-					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(SEARCH|SCAN|MATCH)\s+</string>
-					<key>name</key>
-					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT)\s+</string>
-					<key>name</key>
-					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\.YN)\s+</string>
-					<key>name</key>
-					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT)\s+</string>
-					<key>name</key>
-					<string>skeyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -179,18 +145,6 @@
 					<string>^\s+#(IFDEF|IFNDEF|ENDIF|IFLABEL|IFNLABEL)(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>constant.other.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+\b(.\.)?QUERY\..{3,5}\s</string>
-					<key>name</key>
-					<string>support.function.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\b\b(.\.)?NEXT\..{3,5}\s</string>
-					<key>name</key>
-					<string>support.function.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -269,6 +223,45 @@
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
+					<key>match</key>
+					<string>^\s+([A-Z]\.)?(QUERY\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\w|\.|\$|=)</string>
+					<key>name</key>
+					<string>support.function.dbc</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.dbc</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^\s+(CALL)\s([A-Z]\.)(NEXT\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\w|\.|\$|=)</string>
+					<key>name</key>
+					<string>support.function.dbc</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>support.function.dbc</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^\s+(CALL)\s([A-Z]\.)((BK|PT|WT|RD|RT|OD|OP|RK|CO|CL|PR|UK|RP)[A-Z0-9]{1,3}[1-9]{0,2})(?!\w|\.|\$|=)</string>
+					<key>name</key>
+					<string>support.function.dbc</string>
+				</dict>
+				<dict>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -284,12 +277,16 @@
 					</dict>
 					<key>match</key>
 					<string>^\s+(GOTO|CALL|PERFORM|BRANCH)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>^\s+(SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
+					<string>^\s+(IF|ENDIF|ELSE)(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
