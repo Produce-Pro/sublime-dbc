@@ -107,63 +107,78 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>^\s+(MOVE|PACK|UNPACK|CLEAR|LOAD|FILL|APPEND|CMOVE|SET)\s+</string>
-					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>^\s+(CLEAR|CMOVE|SET)\s+</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^\s+(MOVE|PACK|UNPACK|LOAD|FILL|APPEND|PACKLEN|STORE)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(MOVEFPTR|MOVELPTR|BUMP|RESET|LENSET|REPLACE|REP|SETLPTR|SETFPTR)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(ADD|SUB|MULT|DIVIDE|MOD)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(SEARCH|SCAN|MATCH)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\.YN)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>skeyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>^\s+(DISPLAY|SCRNSAVE|SCRNREST|DSPFNC|STATESAVE|STATEREST)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>keyword.operator.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\b(CHOP|SQUEEZE|TRIM)\s+</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>constant.other.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+#(IFDEF|IFNDEF|ENDIF)\s+</string>
+					<string>^\s+#(IFDEF|IFNDEF|ENDIF|IFLABEL|IFNLABEL)(?!\w|\.|\$|=)</string>
 					<key>name</key>
-					<string>entity.name.function.dbc</string>
+					<string>constant.other.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -200,6 +215,12 @@
 					<string>^\s+(RETURN.EOS|RETURN.NOTEOS)\s+</string>
 					<key>name</key>
 					<string>support.function.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>^\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))\s+</string>
+					<key>name</key>
+					<string>entity.name.function.dbc</string>
 				</dict>
 			</array>
 		</dict>
@@ -243,19 +264,38 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\s+</string>
+					<string>^\s+(RETURN|CHAIN|STOP|BEEP)\s+</string>
+					<key>name</key>
+					<string>keyword.control.dbc</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.dbc</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^\s+(GOTO|CALL|PERFORM|BRANCH)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
+					<string>^\s+(SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(?&lt;!\w|\.|\$)IF(?!\w|\.|\$|=)</string>
+					<string>(?&lt;!\w|\.|\$)(IF|ENDIF|ELSE)(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
@@ -269,7 +309,7 @@
 					<key>match</key>
 					<string>\b[0-9]+\.*[0-9]*\b</string>
 					<key>name</key>
-					<string>keyword.constant.numeric</string>
+					<string>constant.numeric.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -278,8 +318,32 @@
 					<string>keyword.operator.logical.dbc</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.dbc</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>(?&lt;!\w|\.|\$)(ROUTINE|ENDROUTINE|LROUTINE|VERB)(?!\w|\.|\$|=)</string>
+					<string>([A-Z0-9._$@]+(?!\w|\.|\$|=))\s+(ROUTINE|LROUTINE|VERB)(?!\w|\.|\$|=)\s([A-Z0-9._$@]+(?!\w|\.|\$|=|,))*</string>
+					<key>name</key>
+					<string>entity.name.function.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>^\s(ENDROUTINE)(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>
@@ -296,16 +360,62 @@
 					<string>meta.arrayindex.meta</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.assignment.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>,</string>
-					<key>name</key>
-					<string>keyword.operator.assignment.dbc</string>
+					<string>(,)\s?([A-Z0-9._$@]+(?!\w|\.|\$|=))+</string>
 				</dict>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.assignment.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</dict>
 					<key>match</key>
-					<string>\s+(TO|FROM|WITH|OF|IN|INTO)\s+</string>
+					<string>(?!\w|\.|\$|=)\s(TO|FROM|WITH|OF|IN|INTO)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))*</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.dbc</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.function.dbc</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^([A-Z0-9._$@]+(?!\w|\.|\$|=))$</string>
 					<key>name</key>
-					<string>keyword.operator.assignment.dbc</string>
+					<string>entity.name.function.dbc</string>
 				</dict>
 			</array>
 		</dict>

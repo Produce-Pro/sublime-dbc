@@ -54,22 +54,34 @@
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "^\\s+(RETURN|GOTO|CALL|PERFORM|BRANCH|CHAIN)\\s+"
+					"match": "^\\s+(RETURN|CHAIN|STOP|BEEP)\\s+"
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "^\\s+(ELSE|ENDIF|SWITCH|ENDSWITCH|CASE|DEFAULT)\\s+"
+					"match": "^\\s+(GOTO|CALL|PERFORM|BRANCH)\\s+([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))",
+					"captures": {
+						"1": {
+							"name" : "keyword.control.dbc"
+						},
+						"2": {
+							"name" : "entity.name.function.dbc"
+						}
+					}
 				},
 				{
 					"name": "keyword.control.dbc",
-					"match": "(?<!\\w|\\.|\\$)IF(?!\\w|\\.|\\$|=)"
+					"match": "^\\s+(SWITCH|ENDSWITCH|CASE|DEFAULT)\\s+"
+				},
+				{
+					"name": "keyword.control.dbc",
+					"match": "(?<!\\w|\\.|\\$)(IF|ENDIF|ELSE)(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "keyword.operator.arithmetic.dbc",
 					"match": "(\\-|\\+|\\*|\\/|%)"
 				},
 				{
-					"name": "keyword.constant.numeric",
+					"name": "constant.numeric.dbc",
 					"match": "\\b[0-9]+\\.*[0-9]*\\b"
 				},
 				{
@@ -78,7 +90,22 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "(?<!\\w|\\.|\\$)(ROUTINE|ENDROUTINE|LROUTINE|VERB)(?!\\w|\\.|\\$|=)"
+					"match": "([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))\\s+(ROUTINE|LROUTINE|VERB)(?!\\w|\\.|\\$|=)\\s([A-Z0-9._$@]+(?!\\w|\\.|\\$|=|,))*",
+					"captures": {
+						"1": {
+							"name" : "entity.name.function.dbc"
+						},
+						"2": {
+							"name" : "entity.name.function.dbc"
+						},
+						"3": {
+							"name" : "variable.parameter.dbc"
+						}
+					}
+				},
+				{
+					"name": "entity.name.function.dbc",
+					"match": "^\\s(ENDROUTINE)(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "keyword.operator.comparison.dbc",
@@ -89,12 +116,41 @@
 					"match": "(\\[|\\])"
 				},
 				{
-					"name": "keyword.operator.assignment.dbc",
-					"match": ","
+					"match": "(,)\\s?([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))+",
+					"captures": {
+						"1": {
+							"name" : "keyword.operator.assignment.dbc"
+						},
+						"2": {
+							"name" : "variable.parameter.dbc"
+						}
+					}
 				},
 				{
-					"name": "keyword.operator.assignment.dbc",
-					"match": "\\s+(TO|FROM|WITH|OF|IN|INTO)\\s+"
+					"match": "(?!\\w|\\.|\\$|=)\\s(TO|FROM|WITH|OF|IN|INTO)\\s+([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))*",
+					"captures": {
+						"1": {
+							"name" : "keyword.operator.assignment.dbc"
+						},
+						"2": {
+							"name" : "variable.parameter.dbc"
+						}
+					}
+				},
+				{
+					"name": "entity.name.function.dbc",
+					"match": "^([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))$",
+					"captures": {
+						"1": {
+							"name" : "entity.name.function.dbc"
+						},
+						"2": {
+							"name" : "entity.name.function.dbc"
+						},
+						"3": {
+							"name" : "variable.parameter.dbc"
+						}
+					}
 				}
 			]
 		},
@@ -218,44 +274,55 @@
 		"dbc-functions": {
 			"patterns": [
 				{
-					"name": "entity.name.function.dbc",
-					"match": "^\\s+(MOVE|PACK|UNPACK|CLEAR|LOAD|FILL|APPEND|CMOVE|SET)\\s+"
+					"match": "^\\s+(CLEAR|CMOVE|SET)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"match": "^\\s+(MOVE|PACK|UNPACK|LOAD|FILL|APPEND|PACKLEN|STORE)\\s+([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))",
+					"captures": {
+						"1": {
+							"name" : "keyword.operator.dbc"
+						},
+						"2": {
+							"name" : "variable.parameter.dbc"
+						}
+					}
+
+				},
+				{
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(MOVEFPTR|MOVELPTR|BUMP|RESET|LENSET|REPLACE|REP|SETLPTR|SETFPTR)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(ADD|SUB|MULT|DIVIDE|MOD)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(SEARCH|SCAN|MATCH)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(SETFLAG|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\\.YN)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "skeyword.operator.dbc",
 					"match": "^\\s+(WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "keyword.operator.dbc",
 					"match": "^\\s+(DISPLAY|SCRNSAVE|SCRNREST|DSPFNC|STATESAVE|STATEREST)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
+					"name": "constant.other.dbc",
 					"match": "\\b(CHOP|SQUEEZE|TRIM)\\s+"
 				},
 				{
-					"name": "entity.name.function.dbc",
-					"match": "^\\s+#(IFDEF|IFNDEF|ENDIF)\\s+"
+					"name": "constant.other.dbc",
+					"match": "^\\s+#(IFDEF|IFNDEF|ENDIF|IFLABEL|IFNLABEL)(?!\\w|\\.|\\$|=)"
 				},
 				{
 					"name": "support.function.dbc",
@@ -280,6 +347,10 @@
 				{
 					"name": "support.function.dbc",
 					"match": "^\\s+(RETURN.EOS|RETURN.NOTEOS)\\s+"
+				},
+				{
+					"name" : "entity.name.function.dbc",
+					"match": "^\\s+([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))\\s+"
 				}
 
 
