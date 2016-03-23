@@ -79,6 +79,10 @@
 				</dict>
 				<dict>
 					<key>include</key>
+					<string>#expressions</string>
+				</dict>
+				<dict>
+					<key>include</key>
 					<string>#all-types</string>
 				</dict>
 			</array>
@@ -106,6 +110,12 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>match</key>
+					<string>\b(CHOP|SQUEEZE|TRIM|MOD)\s+</string>
+					<key>name</key>
+					<string>constant.other.dbc</string>
+				</dict>
+				<dict>
 					<key>captures</key>
 					<dict>
 						<key>1</key>
@@ -120,25 +130,13 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^\s+(MOVE|PACK|UNPACK|LOAD|FILL|APPEND|PACKLEN|STORE|CLEAR|CMOVE|SET|MOVEFPTR|MOVELPTR|BUMP|RESET|LENSET|REPLACE|REP|SETLPTR|SETFPTR|ADD|SUB|MULT|DIVIDE|MOD|SEARCH|SCAN|MATCH|TYPE|FLAGSAVE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPSAVE|TRAP|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT|TESTADR|SETCVAR|SETNVAR|MOVEADR|MOVEVL|TESTLABEL|CLEARADR|GETPARM|MOVELABEL|CLEARLABEL|SETVAR|SETVAR\.YN|WRITE|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT|UPDATE|FPOSIT)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))?</string>
+					<string>^\s+(SWITCH|MOVE|FILL|APPEND|CMOVE|MOVEFPTR|MOVELPTR|BUMP|LENSET|REPLACE|REP|SETLPTR|SETFPTR|ADD|SUB|MULT|DIVIDE|SEARCH|SCAN|MATCH|TYPE|FLAGREST|ENDSET|PAUSE|TRAPCLR|TRAPSET|TRAPREST|NORETURN|SHUTDOWN|CLOCK|RETCOUNT|TESTADR|MOVEADR|MOVEVL|TESTLABEL|MOVELABEL|CLOSE|PREP|READ|OPEN|ERASE|ROLLOUT|REPOSIT|LOADMOD|UNLOAD|PRINT|UPDATE|FPOSIT|UNPACK)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))?</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(SETFLAG)\s+</string>
+					<string>^\s+(SETFLAG|DISPLAY|SCRNSAVE|SCRNREST|DSPFNC|STATESAVE|STATEREST|PACK|LOAD|PACKLEN|STORE|CLEAR|SET|RESET|FLAGSAVE|CLEARADR|TRAPSAVE|TRAP|CLEARLABEL|GETPARM|SETVAR|SETVAR\.YN|WRITE|SETNVAR|SETCVAR)\s+</string>
 					<key>name</key>
 					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>^\s+(DISPLAY|SCRNSAVE|SCRNREST|DSPFNC|STATESAVE|STATEREST)\s+</string>
-					<key>name</key>
-					<string>keyword.operator.dbc</string>
-				</dict>
-				<dict>
-					<key>match</key>
-					<string>\b(CHOP|SQUEEZE|TRIM)\s+</string>
-					<key>name</key>
-					<string>constant.other.dbc</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -175,6 +173,61 @@
 					<string>^\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))\s+</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
+				</dict>
+			</array>
+		</dict>
+		<key>expressions</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>\(</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.dbc</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>\)</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>0</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.dbc</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>keyword.operator.dbc</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#strings</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#dbc-functions</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#all-types</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>([A-Z0-9._$@]+)</string>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
@@ -238,7 +291,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^\s+(CALL)\s([A-Z]\.)(NEXT\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\w|\.|\$|=)</string>
+					<string>^\s+(CALL)\s([A-Z]\.)?(NEXT\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>support.function.dbc</string>
 				</dict>
@@ -257,7 +310,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^\s+(CALL)\s([A-Z]\.)((BK|PT|WT|RD|RT|OD|OP|RK|CO|CL|PR|UK|RP)[A-Z0-9]{1,3}[1-9]{0,2})(?!\w|\.|\$|=)</string>
+					<string>^\s+(CALL)\s([A-Z]\.)?((BK|PT|WT|RD|RT|OD|OP|RK|CO|CL|PR|UK|RP)[A-Z0-9]{1,3}[1-9]{0,2})(?!\w|\.|\$|=)</string>
 					<key>name</key>
 					<string>support.function.dbc</string>
 				</dict>
@@ -280,7 +333,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^\s+(SWITCH|ENDSWITCH|CASE|DEFAULT)\s+</string>
+					<string>^\s+(ENDSWITCH|CASE|DEFAULT)\s+</string>
 					<key>name</key>
 					<string>keyword.control.dbc</string>
 				</dict>
@@ -305,6 +358,12 @@
 				<dict>
 					<key>match</key>
 					<string>\b[0-9]+\.*[0-9]*\b</string>
+					<key>name</key>
+					<string>constant.numeric.dbc</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\s(@)$</string>
 					<key>name</key>
 					<string>constant.numeric.dbc</string>
 				</dict>
@@ -357,58 +416,52 @@
 					<string>meta.arrayindex.meta</string>
 				</dict>
 				<dict>
-					<key>captures</key>
+					<key>begin</key>
+					<string>(?!\w|\.|\$|=)\s(FROM|WITH|OF|IN)\s</string>
+					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator.assignment.dbc</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>variable.parameter.dbc</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>(,)\s?([A-Z0-9._$@]+(?!\w|\.|\$|=))+</string>
-				</dict>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.operator.assignment.dbc</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>variable.parameter.dbc</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>(?!\w|\.|\$|=)\s(TO|FROM|WITH|OF|IN|INTO)\s+([A-Z0-9._$@]+(?!\w|\.|\$|=))*</string>
-				</dict>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.function.dbc</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>entity.name.function.dbc</string>
+							<string>keyword.ssraw</string>
 						</dict>
 						<key>3</key>
 						<dict>
 							<key>name</key>
-							<string>variable.parameter.dbc</string>
+							<string>constant.numeric.ssraw</string>
 						</dict>
 					</dict>
+					<key>end</key>
+					<string>\n</string>
+					<key>name</key>
+					<string>keyword.operator.assignment.dbc</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>,</string>
+							<key>name</key>
+							<string>keyword.operator.assignment.dbc</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>([A-Z0-9._$@]+)</string>
+							<key>name</key>
+							<string>variable.parameter.dbc</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?!\w|\.|\$|=)\s(TO|INTO)\s</string>
+					<key>name</key>
+					<string>keyword.operator.assignment.dbc</string>
+				</dict>
+				<dict>
 					<key>match</key>
 					<string>^([A-Z0-9._$@]+(?!\w|\.|\$|=))$</string>
 					<key>name</key>
@@ -422,7 +475,7 @@
 			<array>
 				<dict>
 					<key>match</key>
-					<string>\s(?:CHAR|FORM|EXTERNAL|EQU)\s</string>
+					<string>\s(?:CHAR|FORM|EXTERNAL|EQU)\b</string>
 					<key>name</key>
 					<string>storage.type.primative.dbc</string>
 				</dict>
