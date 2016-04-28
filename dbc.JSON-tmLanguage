@@ -65,7 +65,7 @@
 				},
 				{
 					"name": "support.function.dbc",
-					"match": "^\\s+(CALL)\\s([A-Z]\\.)?(NEXT\\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\\w|\\.|\\$|=)",
+					"match": "^\\s+(CALL)\\s([A-Z]\\.)?((NEXT|BACK)\\.[A-Z0-9]{1,3}[1-9]{1,2})(?!\\w|\\.|\\$|=)",
 					"captures": {
 						"1": {
 							"name" : "keyword.control.dbc"
