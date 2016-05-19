@@ -67,6 +67,10 @@
 				</dict>
 				<dict>
 					<key>include</key>
+					<string>#comments</string>
+				</dict>
+				<dict>
+					<key>include</key>
 					<string>#keywords</string>
 				</dict>
 				<dict>
@@ -76,10 +80,6 @@
 				<dict>
 					<key>include</key>
 					<string>#expressions</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#comments</string>
 				</dict>
 				<dict>
 					<key>include</key>
