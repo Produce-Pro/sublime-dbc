@@ -63,7 +63,7 @@
 			<array>
 				<dict>
 					<key>include</key>
-					<string>#comments</string>
+					<string>#strings</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -75,11 +75,11 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#strings</string>
+					<string>#expressions</string>
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#expressions</string>
+					<string>#comments</string>
 				</dict>
 				<dict>
 					<key>include</key>
@@ -99,7 +99,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+(\.).*</string>
+					<string>\s+(\.\/).*</string>
 					<key>name</key>
 					<string>comment.line.empty.dbc</string>
 				</dict>
@@ -220,6 +220,10 @@
 						<dict>
 							<key>include</key>
 							<string>#all-types</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#keywords</string>
 						</dict>
 						<dict>
 							<key>match</key>
@@ -357,7 +361,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b[0-9]+\.*[0-9]*\b</string>
+					<string>\b[0-9]*(\.[0-9]+)*\b</string>
 					<key>name</key>
 					<string>constant.numeric.dbc</string>
 				</dict>

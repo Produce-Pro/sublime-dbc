@@ -29,7 +29,7 @@
 		"code": {
 			"patterns": [
 				{
-					"include": "#comments"
+					"include": "#strings"
 				},
 				{
 					"include": "#keywords"
@@ -38,10 +38,10 @@
 					"include": "#functions"
 				},
 				{
-					"include": "#strings"
+					"include": "#expressions"
 				},
 				{
-					"include": "#expressions"
+					"include": "#comments"
 				},
 				{
 					"include": "#all-types"
@@ -113,7 +113,7 @@
 				},
 				{
 					"name": "constant.numeric.dbc",
-					"match": "\\b[0-9]+\\.*[0-9]*\\b"
+					"match": "\\b[0-9]*(\\.[0-9]+)*\\b"
 				},
 				{
 					"name": "constant.numeric.dbc",
@@ -188,7 +188,7 @@
 					"name": "comment.line.dbc"
 				},
 				{
-					"match": "\\s+(\\.).*",
+					"match": "\\s+(\\.\\/).*",
 					"name": "comment.line.empty.dbc"
 				}
 			]
@@ -278,7 +278,9 @@
 						{
 							"include": "#all-types"
 						},
-
+						{
+							"include": "#keywords"
+						},
 						{
 							"match": "([A-Z0-9._$@]+)",
 							"name": "variable.parameter.dbc"
