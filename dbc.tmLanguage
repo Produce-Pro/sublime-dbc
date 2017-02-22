@@ -67,10 +67,6 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#comments</string>
-				</dict>
-				<dict>
-					<key>include</key>
 					<string>#keywords</string>
 				</dict>
 				<dict>
@@ -84,6 +80,10 @@
 				<dict>
 					<key>include</key>
 					<string>#all-types</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#comments</string>
 				</dict>
 			</array>
 		</dict>
@@ -99,7 +99,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\s+(\.\/).*</string>
+					<string>\s+(\.).*</string>
 					<key>name</key>
 					<string>comment.line.empty.dbc</string>
 				</dict>
@@ -355,7 +355,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(\-|\+|\*|\/|%)</string>
+					<string>(?&lt;!^)(\-|\+|\*|\/|%)</string>
 					<key>name</key>
 					<string>keyword.operator.arithmetic.dbc</string>
 				</dict>
@@ -467,7 +467,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>^([A-Z0-9._$@]+(?!\w|\.|\$|=))$</string>
+					<string>^([A-Z0-9_$@]+[A-Z0-9._$@]*(?!\w|\.|\$|=))$</string>
 					<key>name</key>
 					<string>entity.name.function.dbc</string>
 				</dict>

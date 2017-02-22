@@ -32,9 +32,6 @@
 					"include": "#strings"
 				},
 				{
-					"include": "#comments"
-				},
-				{
 					"include": "#keywords"
 				},
 				{
@@ -45,6 +42,9 @@
 				},
 				{
 					"include": "#all-types"
+				},
+				{
+					"include": "#comments"
 				}
 			]
 		},
@@ -109,7 +109,7 @@
 				},
 				{
 					"name": "keyword.operator.arithmetic.dbc",
-					"match": "(\\-|\\+|\\*|\\/|%)"
+					"match": "(?<!^)(\\-|\\+|\\*|\\/|%)"
 				},
 				{
 					"name": "constant.numeric.dbc",
@@ -176,7 +176,7 @@
 				},
 				{
 					"name": "entity.name.function.dbc",
-					"match": "^([A-Z0-9._$@]+(?!\\w|\\.|\\$|=))$"
+					"match": "^([A-Z0-9_$@]+[A-Z0-9._$@]*(?!\\w|\\.|\\$|=))$"
 				}
 			]
 		},
@@ -188,7 +188,7 @@
 					"name": "comment.line.dbc"
 				},
 				{
-					"match": "\\s+(\\.\\/).*",
+					"match": "\\s+(\\.).*",
 					"name": "comment.line.empty.dbc"
 				}
 			]
