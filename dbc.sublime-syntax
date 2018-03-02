@@ -35,7 +35,8 @@ contexts:
     # - include: keywords
     # - include: operators
     # - include: operands
-    - include: numbers
+    - include: brackets
+    # - include: numbers
     - include: dbc_constants
     # - include: verb_calls
 
@@ -67,7 +68,7 @@ contexts:
 
   numbers:
     # Numbers
-    - match: (-)?((\b[0-9]+\.[0-9]+)|(\s\.[0-9]+\b)|(\b[0-9]+)|)\b
+    - match: (-)?((\b[0-9]+\.[0-9]+)|(\.[0-9]+\b)|(\b[0-9]+))\b
       scope: constant.numeric.dbc
 
   dbc_constants:
@@ -82,7 +83,7 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.dbc
           pop: true
-        - include: expressions
+        - include: parameters
 
 
   # Write it to check if it starts beginning of line
@@ -136,11 +137,14 @@ contexts:
     - match: \=
       scope: keyword.operator.assignment.c
 
-  operand_seperators:
-    - match: ',|~'
+  expression_seperators:
+    - match: ','
       scope: punctuation.separator.dbc
     - match: :\n
-      scope: punctuation.separator.c
+      scope: punctuation.separator.dbc
+
+  seperators:
+    - include: expression_seperators
     - match: '{{operands}}'
       scope: punctuation.separator.c
 
@@ -153,21 +157,27 @@ contexts:
     - match: (^\s+{{valid_functions}}\s+)
 
   routine_definition:
-    - match: (^{{valid_functions}}\s+((?i)(routine|lroutine)))
+    - match: (^{{valid_functions}}\s+((?i)(routine|lroutine))(\n|\s))
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
       push:
-        - include: parameters
+        - include: expression_seperators
+        - match: ({{valid_variables}}|~{{valid_functions}})
+          scope: variable.parameter.dbc
+        - match: $\n
+          pop: true
+
 
   parameters:
-    - match: \s({{valid_variables}}|~{{valid_functions}})
-      scope: variable.parameter.dbc
-    - include: operand_seperators
-    - match: ({{valid_variables}}|~{{valid_functions}})
-      scope: variable.parameter.dbc
-    - match: $\n
-      pop: true
+        - include: expression_seperators
+        - include: numbers
+        - match: '{{valid_variables}}'
+          scope: variable.other.dbc
+        - match: ~{{valid_functions}}
+          scope: variable.function.dbc
+        - match: $\n
+          pop: true
 
   expressions:
     - match: \(

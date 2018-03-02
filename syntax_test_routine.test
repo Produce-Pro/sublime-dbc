@@ -21,17 +21,19 @@ VAR.MAX$ EQU 2
 .            ^ constant.numeric.dbc
 
 VAR_ CHAR 1[34,VAR.MAX$]
-. <- entity.name.constant
-.      ^ storage.modifier.dbc
+. <- entity.name.type
+.      ^ storage.type.dbc
 .         ^ constant.numeric.dbc
+.          ^ punctuation.section.brackets.begin.dbc
 .           ^ constant.numeric.dbc
 .             ^ punctuation.separator.dbc
-.               ^ variable.other
+.               ^ variable.other.dbc
+.                      ^ punctuation.section.brackets.end.dbc
 VAR@ CHAR @
 LABEL LABEL @
-     ENDROUTINE
      CALL SOMETHING
      MOVE 1 TO Y
      PACK Z WITH 2
      RETURN
      ENDROUTINE
+
