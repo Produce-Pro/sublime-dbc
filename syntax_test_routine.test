@@ -1,0 +1,37 @@
+. SYNTAX TEST "Packages/DBC/dbc.sublime-syntax"
+
+TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
+. <- entity.name.function.dbc
+.               ^ entity.name.function.dbc storage.type.dbc
+.                      ^ variable.parameter.dbc
+.                         ^ punctuation.separator.dbc
+.                          ^ variable.parameter.dbc
+.                              ^^ punctuation.separator.dbc
+.                                ^ variable.parameter.dbc
+. commment
+. <- comment.line.dbc punctuation.definition.comment.dbc
+     VAR2,~LABEL2
+.    ^ variable.parameter.dbc
+.        ^ punctuation.separator.dbc
+.          ^ variable.parameter.dbc
+
+VAR.MAX$ EQU 2
+. <- entity.name.constant
+.         ^ storage.modifier.dbc
+.            ^ constant.numeric.dbc
+
+VAR_ CHAR 1[34,VAR.MAX$]
+. <- entity.name.constant
+.      ^ storage.modifier.dbc
+.         ^ constant.numeric.dbc
+.           ^ constant.numeric.dbc
+.             ^ punctuation.separator.dbc
+.               ^ variable.other
+VAR@ CHAR @
+LABEL LABEL @
+     ENDROUTINE
+     CALL SOMETHING
+     MOVE 1 TO Y
+     PACK Z WITH 2
+     RETURN
+     ENDROUTINE
