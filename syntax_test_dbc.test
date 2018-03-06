@@ -41,6 +41,10 @@ TEST_EXTERNAL EXTERNAL
 FORMATTED_CHAR CHAR 30, INITIAL "YES"
 UPDATE_CHAR EXTERNAL
 
+
+RANDOM_LABEL
+     RETURN
+
 .LIST@          LIST @
 
 SOH$LST        LIST
@@ -94,7 +98,7 @@ BOOL_TEST      FORM 1[3], 1,0,1
      FILL " " IN TYPE
      LOOP
 .    ^ meta.routine.body.dbc meta.control.loop.dbc keyword.control.dbc
-          GETPARM KEYWORD, VAR
+          GETPARM KEYWORD, VAR@
           UNTIL IF OVER
 .         ^ meta.routine.body.dbc  meta.control.loop.dbc keyword.control.dbc
 .                   ^ meta.control.loop.dbc meta.control.if.dbc constant.language.dbc
@@ -131,11 +135,24 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .                      ^ meta.routine.body.dbc meta.generic.statement.dbc meta.parameters.dbc constant.other.placeholder
 .                            ^ meta.routine.body.dbc meta.parameters.dbc
 .                                   ^ meta.routine.body.dbc meta.parameters.dbc variable.other.dbc
+
+     CALL RANDOM_LABEL
+
      TESTADR SIZE@
      IF NOT OVER
+.     ^ meta.routine.body.dbc keyword.control.dbc
+.         ^ constant.language.dbc
           MOVE SIZE TO SIZE@
+     ELSE IF OVER
+.      ^  meta.control.if.dbc keyword.control.dbc
+          MOVE SIZE@ TO SIZE
+     ELSE
+.      ^  meta.control.if.dbc keyword.control.dbc
+          CLEAR SIZE
      ENDIF
+.      ^  meta.control.if.dbc keyword.control.dbc
      RETURN
+
 
 TEST.SECONDROUTINE ROUTINE
 . ^ meta.routine.body.dbc entity.name.function.dbc

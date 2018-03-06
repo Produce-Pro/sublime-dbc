@@ -14,6 +14,7 @@ variables:
   sp: '[ \t]'
   numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
   operands: '((?i)by|to|of|from|using|with|in|into)'
+  constants: '(?i)not|eos|over|less|zero'
   pre: ^{{sp}}+
   file_types: 'file|ifile|afile'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
@@ -29,6 +30,7 @@ contexts:
   main:
     - include: variable-punctuation
     - include: routine-definition
+    - include: label-definition
     - include: variable-definitions
     - include: statements
 
@@ -76,9 +78,48 @@ contexts:
   # invalid keywords when not in those
 
   keywords:
+
+    - include: if-keyword
     - include: switch-keyword
     - include: loop-keyword
     - include: for-keyword
+
+
+  if-keyword:
+    - match: (?i)if\b
+      scope: keyword.control.dbc
+      push: if-parameters
+
+  if-parameters:
+    - match: '{{constants}}'
+      scope: constant.language.dbc
+    - match: $\n
+      set: if-keyword-body
+    # - match: \W
+    #   set: eol-invalid
+
+  if-keyword1:
+    - match: '{{sp}}*{{valid_variables}}'
+      scope: variable.other.dbc
+      set: if-keyword3
+    - include: eol-invalid
+
+  if-keyword3:
+    - match: '\n'
+      set: if-keyword-body
+    - include: eol-invalid
+
+  if-keyword-body:
+    - meta_scope: meta.control.if.dbc
+    - match: '{{pre}}(?i)endif'
+      scope: keyword.control.dbc
+      pop: true
+    - match: '{{pre}}(?i)else if'
+      scope: keyword.control.dbc
+      set: if-parameters
+    - match: '{{pre}}(?i)else'
+      scope: keyword.control.dbc
+    - include: main
 
   eol-if-keyword:
     - match: (?i)if
@@ -222,7 +263,7 @@ contexts:
 
 
   flag-constants:
-    - match: '(?i)(not|eos|over|less|zero)'
+    - match: '{{constants}}'
       scope: constant.language.dbc
 
   number-constants:
@@ -415,6 +456,10 @@ contexts:
     - match: '{{operands}}'
       scope: constant.other.placeholder
 
+
+  label-definition:
+    - match: ^{{valid_functions}}\n
+      scope: entity.name.function.dbc
 
   routine-definition:
     - match: (^{{valid_functions}}\s+((?i)(routine|lroutine)))
