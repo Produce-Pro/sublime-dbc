@@ -13,7 +13,8 @@ variables:
   brk: '[^\(\)\[\]\w~]'
   sp: '[ \t]'
   numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
-  operands: '\b((?i)by|to|of|from|using|with|in|into)\b'
+  operands: '((?i)by|to|of|from|using|with|in|into)'
+  pre: ^{{sp}}+
   file_types: 'file|ifile|afile'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
@@ -33,7 +34,7 @@ contexts:
 
 
   statements:
-    - match: '^{{sp}}+'
+    - match: '{{pre}}'
       push:
         - meta_scope: meta.generic.statement.dbc
         - include: compiler-directive
@@ -62,22 +63,24 @@ contexts:
         - match: $\n
           pop: true
 
-
+  eol-invalid:
+    - match: ''
+      set:
+        - meta_scope: invalid.illegal.dbc
+        - match: $\n
+          pop: true
 # ((?i)break|switch|case|continue|do|else|for|if|return|switch|while|endif|loop|until|repeat|endswitch)'
 
   # switch
   # if
-  # loop
-  # for loop
   # invalid keywords when not in those
 
   keywords:
-    - include: control-keywords
-    - include: control-keywords-if
-    - include: conditional-keywords
-    # - include: assignment_keywords
+    - include: switch-keyword
+    - include: loop-keyword
+    - include: for-keyword
 
-  conditional-keywords:
+  eol-if-keyword:
     - match: (?i)if
       scope: keyword.control.dbc
       push:
@@ -86,6 +89,122 @@ contexts:
         - include: flag-constants
         - match: $\n
           pop: true
+    - match: ''
+      pop: true
+
+  loop-keyword:
+    - match: (?i)loop
+      scope: keyword.control.dbc
+      push:
+        - meta_scope: meta.control.loop.dbc
+        - match: '{{pre}}(?i)repeat'
+          scope: keyword.control.dbc
+          pop: true
+        - include: interloop-keywords
+        - include: main
+
+  interloop-keywords:
+    - match: '{{pre}}(?i)continue|break|until'
+      scope: keyword.control.dbc
+      push:
+        - match: "{{sp}}+"
+          push: eol-if-keyword
+        - match: ''
+          pop: true
+
+  for-keyword:
+    - match: (?i)for\b
+      scope: keyword.control.dbc
+      push: for-keyword1
+
+  for-keyword1:
+    - meta_scope: meta.control.for.parameters.dbc
+    - match: '{{sp}}*{{valid_variables}}'
+      scope: variable.other.dbc
+      set: for-keyword2
+    - include: eol-invalid
+
+  for-keyword2:
+    - match: '{{sp}}+{{operands}}'
+      scope: constant.other.placeholder.dbc
+      set: for-keyword3
+    - include: eol-invalid
+
+  for-keyword3:
+    - match: '{{sp}}+{{valid_variables}}'
+      scope: variable.other.dbc
+      set: for-keyword4
+    - match: '{{sp}}+{{numbers}}'
+      set: for-keyword4
+    - include: eol-invalid
+
+  for-keyword4:
+    - match: '{{sp}}+{{operands}}'
+      scope: constant.other.placeholder.dbc
+      set: for-keyword5
+    - include: eol-invalid
+
+  for-keyword5:
+    - meta_scope: meta.control.for.parameters.dbc
+    - match: '{{sp}}+{{valid_variables}}'
+      scope: variable.other.dbc
+      set: for-keyword-body
+    - match: '{{sp}}+{{numbers}}'
+      set: for-keyword-body
+    - include: eol-invalid
+
+  for-keyword-body:
+    - match: \n
+      set:
+        - meta_scope: meta.control.for.dbc
+        - match: '{{pre}}(?i)repeat'
+          scope: keyword.control.dbc
+          pop: true
+        - include: interloop-keywords
+        - include: main
+    - include: eol-invalid
+
+  switch-keyword:
+    - match: (?i)switch\b
+      scope: keyword.control.dbc
+      set: switch-keyword1
+
+  switch-keyword1:
+    - match: '{{sp}}*{{valid_variables}}'
+      scope: variable.other.dbc
+      set: switch-keyword3
+    - include: eol-invalid
+
+  switch-keyword3:
+    - match: '\n'
+      set: switch-keyword-body
+    - include: eol-invalid
+
+  switch-keyword-body:
+    - meta_scope: meta.control.switch.dbc
+    - match: '{{pre}}(?i)endswitch'
+      scope: keyword.control.dbc
+      pop: true
+    - match: '{{pre}}(?i)case'
+      scope: keyword.control.dbc
+      push: case-keyword-parameters
+    - match: '{{pre}}(?i)default'
+      scope: keyword.control.dbc
+    - include: main
+
+  case-keyword-parameters:
+    - meta_scope: meta.control.case.dbc
+    - match: 'OR|\|'
+      scope: keyword.operator.arithmetic.c
+    - match: '{{numbers}}'
+      scope: constant.numeric.dbc
+    - match: '~{{valid_functions}}'
+      scope: variable.function.dbc
+    - match: '{{valid_variables}}'
+      scope: variable.other.dbc
+    - match: $\n
+      pop: true
+
 
   control-keywords:
     - match: (?i)(endif|repeat|loop|endswitch)
@@ -94,8 +213,6 @@ contexts:
         - include: eol-comments
         - match: $\n
           pop: true
-
-  control-keywords-if:
     - match: (?i)break|continue|until|return|goto
       scope: keyword.control.dbc
       push:
@@ -303,15 +420,17 @@ contexts:
     - match: (^{{valid_functions}}\s+((?i)(routine|lroutine)))
       captures:
         1: entity.name.function.dbc
-        2: storage.type.dbc
-      set:
+        2: storage.type.routine.start.dbc
+      push:
         - routine-definition-body
         - routine-definition-parameters
 
   routine-definition-parameters:
+    - match: $\n
+      pop: true
     - match: '{{sp}}'
       set:
-      - meta_scope: meta.function.parameters.dbc
+      - meta_scope: meta.routine.parameters.dbc
       - match: ({{valid_variables}}|~{{valid_functions}})
         scope: variable.parameter.dbc
       - include: expression-seperators
@@ -320,9 +439,9 @@ contexts:
 
 
   routine-definition-body:
-    - meta_scope: meta.function.dbc
-    - match: '^\s+ENDROUTINE'
-      scope: storage.type.dbc
+    - meta_scope: meta.routine.body.dbc
+    - match: '{{pre}}(?i)endroutine'
+      scope: storage.type.routine.end.dbc
       set: eol-comments
     - include: main
 

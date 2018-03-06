@@ -2,7 +2,7 @@
 
 TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 . <- entity.name.function.dbc
-.               ^ entity.name.function.dbc storage.type.dbc
+.               ^ entity.name.function.dbc storage.type.routine.start.dbc
 .                      ^ variable.parameter.dbc
 .                          ^ variable.parameter.dbc
 .                                ^ variable.parameter.dbc
@@ -44,7 +44,7 @@ UPDATE_CHAR EXTERNAL
 .LIST@          LIST @
 
 SOH$LST        LIST
-.                 ^ meta.function.dbc meta.list.dbc storage.type.dbc
+.                 ^ meta.routine.body.dbc meta.list.dbc storage.type.dbc
 SOHSONO        CHAR 8        SONO          1-    8 S/O no
 SOHCUST        CHAR 6        CUST          9-   14 Customer
 SOHSHIP        CHAR 6        SHIP         15-   20 Ship to
@@ -65,8 +65,8 @@ SOHPKDT        CHAR 8        DATE         91-   98 Pick date
 SOHPKTM        CHAR 6        TIME         99-  104 Pick time
 SOHSHDT        CHAR 8        DATE        105-  112 Ship date
 SOHPDAM        FORM 9.2      AMNT9       169-  180 Product amount
-. <- meta.function.dbc meta.list.dbc meta.type.dbc entity.name.type.dbc
-.               ^ meta.function.dbc meta.list.dbc meta.type.dbc storage.type.dbc
+. <- meta.routine.body.dbc meta.list.dbc meta.type.dbc entity.name.type.dbc
+.               ^ meta.routine.body.dbc meta.list.dbc meta.type.dbc storage.type.dbc
 SOHNBRI        FORM 6.2      QUAN        181-  189 Number of items
 SOHLINS        FORM 3                    190-  192 Number of detail lines
 SOHTACS        FORM 9.2      AMNT9       193-  204 Total actual cost
@@ -76,15 +76,15 @@ SOHNEWI        CHAR 1        YN          228-  228 New items added?
 SOHBLDF        CHAR 1[3]     YN          229-  229 Build pending flag?
 SOHIVCT        FORM 2                    230-  231 Invoice printed count
                LISTEND
-.                  ^ meta.function.dbc meta.list.dbc storage.type.dbc
+.                  ^ meta.routine.body.dbc meta.list.dbc storage.type.dbc
 
 
 BOOL_TEST      FORM 1[3], 1,0,1
-. <- meta.function.dbc meta.type.dbc entity.name.type.dbc
-.               ^ meta.function.dbc meta.type.dbc storage.type.dbc
-.                    ^ meta.function.dbc meta.brackets.dbc punctuation.section.brackets.begin.dbc
-.                       ^^ meta.function.dbc storage.modifier.dbc
-.                         ^ meta.function.dbc constant.numeric.dbc
+. <- meta.routine.body.dbc meta.type.dbc entity.name.type.dbc
+.               ^ meta.routine.body.dbc meta.type.dbc storage.type.dbc
+.                    ^ meta.routine.body.dbc meta.brackets.dbc punctuation.section.brackets.begin.dbc
+.                       ^^ meta.routine.body.dbc storage.modifier.dbc
+.                         ^ meta.routine.body.dbc constant.numeric.dbc
 
      CALL SOMETHING
      MOVE 1 TO Y
@@ -93,10 +93,16 @@ BOOL_TEST      FORM 1[3], 1,0,1
      CLEAR SIZE,SIZE2,TYPE.FORM,TYPE
      FILL " " IN TYPE
      LOOP
+.    ^ meta.routine.body.dbc meta.control.loop.dbc keyword.control.dbc
           GETPARM KEYWORD, VAR
           UNTIL IF OVER
+.         ^ meta.routine.body.dbc  meta.control.loop.dbc keyword.control.dbc
+.                   ^ meta.control.loop.dbc meta.control.if.dbc constant.language.dbc
           SWITCH KEYWORD
-               CASE "ARRAY"
+.           ^ meta.control.loop.dbc keyword.control.dbc
+.                    ^ meta.routine.body.dbc variable.other.dbc
+               CASE "ARRAY" | "DONE"
+.               ^ meta.control.switch.dbc meta.control.case.dbc keyword.control.dbc
                     MOVEADR VAR TO VAR@
                CASE "TYPE"
                     MOVEADR VAR TO TYPE@
@@ -105,23 +111,39 @@ BOOL_TEST      FORM 1[3], 1,0,1
                CASE "SIZE2"
                     MOVEADR VAR TO SIZE2@
           ENDSWITCH
+.          ^ meta.control.loop.dbc meta.control.switch.dbc keyword.control.dbc
+
+          FOR FORM2 FROM 1 TO 3
+.          ^  meta.control.loop.dbc meta.control.for.parameters.dbc keyword.control.dbc
+               CONTINUE IF (CHOP CHAR2 = NULL)
+               CALL UPDATE_CHAR WITH "LOOP",CHAR2
+          REPEAT
+.         ^  meta.control.for.dbc keyword.control.dbc
      REPEAT
+.    ^  meta.control.loop.dbc keyword.control.dbc
+
 
      FORMATVERB IN="TEST",OUT=FORMATTED_CHAR
 
      CALL UPDATE_CHAR WITH "TEST",FORMATTED_CHAR
-.    ^^^^ meta.function.dbc meta.generic.statement.dbc support.function.dbc
-.          ^ meta.function.dbc meta.generic.statement.dbc variable.function.call.dbc
-.                      ^ meta.function.dbc meta.generic.statement.dbc meta.parameters.dbc constant.other.placeholder
-.                            ^ meta.function.dbc meta.parameters.dbc
-.                                   ^ meta.function.dbc meta.parameters.dbc variable.other.dbc
+.    ^^^^ meta.routine.body.dbc meta.generic.statement.dbc support.function.dbc
+.          ^ meta.routine.body.dbc meta.generic.statement.dbc variable.function.call.dbc
+.                      ^ meta.routine.body.dbc meta.generic.statement.dbc meta.parameters.dbc constant.other.placeholder
+.                            ^ meta.routine.body.dbc meta.parameters.dbc
+.                                   ^ meta.routine.body.dbc meta.parameters.dbc variable.other.dbc
      TESTADR SIZE@
      IF NOT OVER
           MOVE SIZE TO SIZE@
      ENDIF
      RETURN
 
+TEST.SECONDROUTINE ROUTINE
+. ^ meta.routine.body.dbc entity.name.function.dbc
+.                   ^ storage.type.routine.start.dbc
      ENDROUTINE
-.     ^ storage.type.dbc
+.     ^ meta.routine.body.dbc meta.routine.body.dbc storage.type.routine.end.dbc
+
+     ENDROUTINE
+.     ^ meta.routine.body.dbc storage.type.routine.end.dbc
 
      CALL TEST
