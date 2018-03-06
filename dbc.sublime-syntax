@@ -33,8 +33,6 @@ contexts:
 
 
   statements:
-    # - match: '^\s+(?i)if'
-    #   scope: keyword.control.db
     - match: '^{{sp}}+'
       push:
         - meta_scope: meta.generic.statement.dbc
@@ -66,6 +64,12 @@ contexts:
 
 
 # ((?i)break|switch|case|continue|do|else|for|if|return|switch|while|endif|loop|until|repeat|endswitch)'
+
+  # switch
+  # if
+  # loop
+  # for loop
+  # invalid keywords when not in those
 
   keywords:
     - include: control-keywords
@@ -131,14 +135,6 @@ contexts:
         - include: number-constants
 
 
-  # Write it to check if it starts beginning of line
-  # Label
-  # Routines
-  # External label includes
-  # Constants
-  # Variables
-  # Lists
-  # Objects
   variable-definitions:
     - include: standard-types
     - include: label-types

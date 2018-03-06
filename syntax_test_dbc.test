@@ -110,7 +110,11 @@ BOOL_TEST      FORM 1[3], 1,0,1
      FORMATVERB IN="TEST",OUT=FORMATTED_CHAR
 
      CALL UPDATE_CHAR WITH "TEST",FORMATTED_CHAR
-
+.    ^^^^ meta.function.dbc meta.generic.statement.dbc support.function.dbc
+.          ^ meta.function.dbc meta.generic.statement.dbc variable.function.call.dbc
+.                      ^ meta.function.dbc meta.generic.statement.dbc meta.parameters.dbc constant.other.placeholder
+.                            ^ meta.function.dbc meta.parameters.dbc
+.                                   ^ meta.function.dbc meta.parameters.dbc variable.other.dbc
      TESTADR SIZE@
      IF NOT OVER
           MOVE SIZE TO SIZE@
