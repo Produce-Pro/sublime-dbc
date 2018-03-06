@@ -12,14 +12,14 @@ variables:
   # Characters that break up variables/functions
   brk: '[^\(\)\[\]\w~]'
   sp: '[ \t]'
+  pre: ^{{sp}}+
   numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
   operands: '((?i)by|to|of|from|using|with|in|into)'
   constants: '(?i)not|eos|over|less|zero'
-  pre: ^{{sp}}+
-  file_types: 'file|ifile|afile'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
-  assignment_keywords: 'move|to|with'
+  assignment_keywords: '(?i)move|to|with'
+  alter_keywords: '(?i)sqznum|form|char|squeeze|trim|size|length'
 
 contexts:
 
@@ -93,10 +93,36 @@ contexts:
   if-parameters:
     - match: '{{constants}}'
       scope: constant.language.dbc
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      push: if-parentheses
+
     - match: $\n
       set: if-keyword-body
     # - match: \W
     #   set: eol-invalid
+
+  if-parentheses:
+    - match: '{{constants}}'
+      scope: constant.language.dbc
+    - match: '<\=|>\=|\=|<|>|\!\='
+      scope: keyword.operator.comparison.dbc
+    - match: (?i)or|and
+      scope: keyword.operator.arithmetic.dbc
+    - include: parentheses-body
+    - match: '\)'
+      scope: punctuation.section.parentheses.end.dbc
+      pop: true
+
+  parentheses-body:
+    - match: \+|\-|/|%|\||\^|~|!|\*
+      scope: keyword.operator.arithmetic.dbc
+    - include: number-constants
+    - match: '{{alter_keywords}}'
+      scope: support.function.dbc
+    - match: '{{valid_variables}}'
+      scope: variable.other.dbc
+
 
   if-keyword1:
     - match: '{{sp}}*{{valid_variables}}'
@@ -434,16 +460,12 @@ contexts:
 
 
   operators:
-    - match: \+\=|-\=|\*\=|/\=|%\=|&\=|\|\=|\^\=|>>\=|<<\=
-      scope: keyword.operator.assignment.augmented.
     - match: <<|>>|&&|\|\|
       scope: keyword.operator.arithmetic.c
-    - match: <\=|>\=|\=\=|<|>|\!\=
+    - match: <\=|>\=|\=|<|>|\!\=
       scope: keyword.operator.comparison.c
     - match: \+|\-|/|%|\||\^|~|!|\*
       scope: keyword.operator.arithmetic.c
-    - match: \=
-      scope: keyword.operator.assignment.c
 
   expression-seperators:
     - match: '\s*,\s*'
