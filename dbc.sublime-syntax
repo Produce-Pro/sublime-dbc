@@ -11,12 +11,12 @@ scope: source.dbc
 variables:
   # Characters that break up variables/functions
   brk: '[^\(\)\[\]\w~]'
+  sp: '[ \t]'
+  numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
   operands: '\b((?i)by|to|of|from|using|with|in|into)\b'
-
-  control_keywords: '((?i)break|switch|case|continue|do|else|for|if|return|switch|while|endif|loop|until|repeat|endswitch)'
   basic_types: '((?i)(char|form|init|num|float|int|integer|var|dim))'
   constant_types: '((?i)(define|equ))'
-  advanced_types: '((?i)record|object|external|label)'
+  advanced_types: '((?i)record|object|)'
   file_types: 'file|ifile|afile'
   compiler_directive: '\#ifdef|\#endif|\#ifndef|\#iflabel'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
@@ -26,25 +26,31 @@ variables:
 contexts:
 
   prototype:
-  - include: line_comments
-  main:
-    - include: variable_punctuation
-    - include: routine_definition
-    - include: types
+    - include: line-comments
     - include: strings
-    # - include: keywords
-    # - include: operators
-    # - include: operands
-    - include: brackets
-    # - include: numbers
-    - include: dbc_constants
-    # - include: verb_calls
 
-  variable_punctuation:
+  main:
+    - include: variable-punctuation
+    - include: routine-definition
+    - include: variable-definitions
+    - include: statements
+
+
+  statements:
+    # - match: '^\s+(?i)if'
+    #   scope: keyword.control.db
+    - match: '^{{sp}}+'
+      push:
+        - meta_scope: meta.generic.statement.dbc
+        - include: keywords
+        - match: $\n
+          pop: true
+
+  variable-punctuation:
     - match: \$\.
-      scope: punctuation.definition.variable
+      scope: punctuation.definition.variable.dbc
 
-  line_comments:
+  line-comments:
     # Comments begin with a [# .] and finish at the end of the line
     - match: '^[\.\*]'
       scope: punctuation.definition.comment.dbc
@@ -53,27 +59,56 @@ contexts:
         - match: $\n
           pop: true
 
-  end_of_line_comments:
-    # Comments begin with a [# .] and finish at the end of the line
-    - match: ^[\.\*]
-      scope: punctuation.definition.comment.dbc
-      push:
-        - meta_scope: comment.dbc
-        - match: $
+  eol-comments:
+    - match: ''
+      set:
+        - meta_scope: comment.line.dbc
+        - match: $\n
           pop: true
 
+
+# ((?i)break|switch|case|continue|do|else|for|if|return|switch|while|endif|loop|until|repeat|endswitch)'
+
   keywords:
-    - match: (?i)\s+({{control_keywords}})\s
+    - include: control-keywords
+    - include: control-keywords-if
+    - include: conditional-keywords
+    # - include: assignment_keywords
+
+  conditional-keywords:
+    - match: (?i)if
       scope: keyword.control.dbc
+      push:
+        - meta_scope: meta.control.if.dbc
+        # - include: parentheses
+        - include: flag-constants
+        - match: $\n
+          pop: true
 
-  numbers:
-    # Numbers
-    - match: (-)?((\b[0-9]+\.[0-9]+)|(\.[0-9]+\b)|(\b[0-9]+))\b
-      scope: constant.numeric.dbc
+  control-keywords:
+    - match: (?i)(endif|repeat|loop|endswitch)
+      scope: keyword.control.dbc
+      push:
+        - include: eol-comments
+        - match: $\n
+          pop: true
 
-  dbc_constants:
-    - match: \@
+  control-keywords-if:
+    - match: (?i)break|continue|until|return|goto
+      scope: keyword.control.dbc
+      push:
+        - include: conditional-keywords
+        - match: $\n
+          pop: true
+
+
+  flag-constants:
+    - match: '(?i)(not|eos|over|less|zero)'
       scope: constant.language.dbc
+
+  number-constants:
+    - match: '{{numbers}}'
+      scope: constant.numeric.dbc
 
   brackets:
     - match: \[
@@ -83,7 +118,19 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.dbc
           pop: true
+
         - include: parameters
+
+
+  parentheses:
+    - match: \(
+      scope: punctuation.section.parentheses.begin.dbc
+      push:
+        - meta_scope: meta.parentheses.dbc
+        - match: \)
+          scope: punctuation.section.parentheses.end.dbc
+          pop: true
+        - include: number-constants
 
 
   # Write it to check if it starts beginning of line
@@ -94,21 +141,56 @@ contexts:
   # Variables
   # Lists
   # Objects
-  types:
+  variable-definitions:
+    - include: constant-types
+    - include: standard-types
+    - include: label-types
+
+  address-var-modifier:
+    - match: \s\@
+      scope: storage.modifier.dbc
+
+  constant-types:
     - match: (^{{valid_variables}})(\s+{{constant_types}})
       captures:
-        1: entity.name.constant
+        1: entity.name.constant.dbc
         2: storage.modifier.dbc
 
+      push:
+        - meta_scope: meta.type.constant.dbc
+        - match: '{{sp}}{{numbers}}'
+          scope: constant.numeric.dbc
+        - match: '$\n'
+          pop: true
+        - include: eol-comments
+
+  standard-types:
     - match: (^{{valid_variables}})(\s+{{basic_types}})
       captures:
-        1: entity.name.type
+        1: entity.name.type.dbc
         2: storage.type.dbc
 
-    - match: (^{{valid_variables}})(\s+{{advanced_types}})
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}{{numbers}}'
+          scope: constant.numeric.dbc
+        - include: address-var-modifier
+        - include: brackets
+        - match: '$\n'
+          pop: true
+        - include: eol-comments
+
+  label-types:
+    - match: (^{{valid_variables}})((?i)\s(external|label))
       captures:
-        1: entity.name.type
+        1: entity.name.function.dbc
         2: storage.type.dbc
+      push:
+        - match: '$\n'
+          pop: true
+        - include: address-var-modifier
+        - include: dbc_constants
+        - include: eol-comments
 
 
     # Strings begin and end with quotes, and use pound signs as an escape
@@ -137,47 +219,65 @@ contexts:
     - match: \=
       scope: keyword.operator.assignment.c
 
-  expression_seperators:
-    - match: ','
+  expression-seperators:
+    - match: '\s*,\s*'
       scope: punctuation.separator.dbc
-    - match: :\n
+    - match: \s*:$\n
       scope: punctuation.separator.dbc
 
   seperators:
-    - include: expression_seperators
+    - include: expression-seperators
     - match: '{{operands}}'
       scope: punctuation.separator.c
 
-  verb_calls:
-    - match: (^\s+{{valid_functions}}\b)
-      scope: variable.function.verb.c
 
-
-  call_function:
-    - match: (^\s+{{valid_functions}}\s+)
-
-  routine_definition:
-    - match: (^{{valid_functions}}\s+((?i)(routine|lroutine))(\n|\s))
+  routine-definition:
+    - match: (^{{valid_functions}}\s+((?i)(routine|lroutine)))
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
-      push:
-        - include: expression_seperators
-        - match: ({{valid_variables}}|~{{valid_functions}})
-          scope: variable.parameter.dbc
-        - match: $\n
-          pop: true
+      set:
+        - routine-definition-body
+        - routine-definition-parameters
+
+  routine-definition-parameters:
+    - match: '{{sp}}'
+      set:
+      - meta_scope: meta.function.parameters.dbc
+      - match: ({{valid_variables}}|~{{valid_functions}})
+        scope: variable.parameter.dbc
+      - include: line-comments
+      - include: expression-seperators
+      - match: '$\n'
+        pop: true
+
+
+  routine-definition-body:
+    - meta_scope: meta.function.dbc
+    - match: '^\s+ENDROUTINE'
+      scope: storage.type.dbc
+      pop: true
+    - include: main
 
 
   parameters:
-        - include: expression_seperators
-        - include: numbers
+        - match: '{{numbers}}'
+          scope: constant.numeric.dbc
+        - include: expression-seperators
+        - match: '~{{valid_functions}}'
+          scope: variable.function.dbc
         - match: '{{valid_variables}}'
           scope: variable.other.dbc
-        - match: ~{{valid_functions}}
-          scope: variable.function.dbc
         - match: $\n
           pop: true
 
   expressions:
     - match: \(
+
+  verb_call:
+    - match: '^\s+{{valid_functions}}'
+      scope: variable.function
+
+  call_function:
+    - match: \s+(?i)call\s{{valid_functions}}
+      scope: variable.function.call.dbc
