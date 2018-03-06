@@ -14,11 +14,7 @@ variables:
   sp: '[ \t]'
   numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
   operands: '\b((?i)by|to|of|from|using|with|in|into)\b'
-  basic_types: '((?i)(char|form|init|num|float|int|integer|var|dim))'
-  constant_types: '((?i)(define|equ))'
-  advanced_types: '((?i)record|object|)'
   file_types: 'file|ifile|afile'
-  compiler_directive: '\#ifdef|\#endif|\#ifndef|\#iflabel'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   assignment_keywords: 'move|to|with'
@@ -42,7 +38,9 @@ contexts:
     - match: '^{{sp}}+'
       push:
         - meta_scope: meta.generic.statement.dbc
+        - include: compiler-directive
         - include: keywords
+        - include: call_function
         - match: $\n
           pop: true
 
@@ -142,16 +140,35 @@ contexts:
   # Lists
   # Objects
   variable-definitions:
-    - include: constant-types
     - include: standard-types
     - include: label-types
+    - include: list-types
+
+  standard-types:
+    - include: constant-types
+    - include: character-types
+    - include: numeric-types
 
   address-var-modifier:
     - match: \s\@
       scope: storage.modifier.dbc
 
+  compiler-directive:
+    - match: '[\#\%]'
+      scope: storage.modifier.dbc
+      set:
+        - match: '(?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)'
+          scope: storage.modifier.dbc
+          set:
+            - include: parameters
+
+        - match: '(?i)(else|endif)'
+          scope: storage.modifier.dbc
+          set:
+            - include: eol-comments
+
   constant-types:
-    - match: (^{{valid_variables}})(\s+{{constant_types}})
+    - match: (^{{valid_variables}})(\s+((?i)(define|equ)))
       captures:
         1: entity.name.constant.dbc
         2: storage.modifier.dbc
@@ -164,8 +181,8 @@ contexts:
           pop: true
         - include: eol-comments
 
-  standard-types:
-    - match: (^{{valid_variables}})(\s+{{basic_types}})
+  character-types:
+    - match: (^{{valid_variables}})(\s+((?i)char|dim|init))
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
@@ -174,14 +191,52 @@ contexts:
         - meta_scope: meta.type.dbc
         - match: '{{sp}}{{numbers}}'
           scope: constant.numeric.dbc
-        - include: address-var-modifier
-        - include: brackets
-        - match: '$\n'
+          set:
+            - include: brackets
+            - match: ', (?i)initial'
+              scope: storage.modifier.dbc
+              set: parameters
+            - include: eol-comments
+        - match: \s\@
+          scope: storage.modifier.dbc
+          set:
+            - include: brackets
+            - match: ', (?i)initial'
+              scope: storage.modifier.dbc
+              set: parameters
+            - include: eol-comments
+        - match: $\n
           pop: true
-        - include: eol-comments
+
+  numeric-types:
+    - match: (^{{valid_variables}})(\s+((?i)form|num|int|float))
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}{{numbers}}'
+          scope: constant.numeric.dbc
+          set:
+            - include: brackets
+            - match: ', '
+              scope: storage.modifier.dbc
+              set: parameters
+            - include: eol-comments
+        - match: \s\@
+          scope: storage.modifier.dbc
+          set:
+            - include: brackets
+            - match: ', '
+              scope: storage.modifier.dbc
+              set: parameters
+            - include: eol-comments
+        - match: $\n
+          pop: true
 
   label-types:
-    - match: (^{{valid_variables}})((?i)\s(external|label))
+    - match: (^{{valid_variables}})((?i)\s+(external|label))
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
@@ -189,8 +244,25 @@ contexts:
         - match: '$\n'
           pop: true
         - include: address-var-modifier
-        - include: dbc_constants
         - include: eol-comments
+
+  list-types:
+    - match: (^{{valid_variables}})((?i)\s+((?i)list))
+      captures:
+        1: entity.name.list.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.list.dbc
+        - match: \s\@
+          scope: storage.modifier.dbc
+          pop: true
+        - match: '$\n'
+          set:
+          - meta_scope: meta.list.dbc
+          - match: '^{{sp}}+(?i)\s(listend)'
+            scope: storage.type.dbc
+            pop: true
+          - include: standard-types
 
 
     # Strings begin and end with quotes, and use pound signs as an escape
@@ -228,7 +300,7 @@ contexts:
   seperators:
     - include: expression-seperators
     - match: '{{operands}}'
-      scope: punctuation.separator.c
+      scope: constant.other.placeholder
 
 
   routine-definition:
@@ -246,7 +318,6 @@ contexts:
       - meta_scope: meta.function.parameters.dbc
       - match: ({{valid_variables}}|~{{valid_functions}})
         scope: variable.parameter.dbc
-      - include: line-comments
       - include: expression-seperators
       - match: '$\n'
         pop: true
@@ -256,28 +327,40 @@ contexts:
     - meta_scope: meta.function.dbc
     - match: '^\s+ENDROUTINE'
       scope: storage.type.dbc
-      pop: true
+      set: eol-comments
     - include: main
 
 
   parameters:
-        - match: '{{numbers}}'
-          scope: constant.numeric.dbc
-        - include: expression-seperators
-        - match: '~{{valid_functions}}'
-          scope: variable.function.dbc
-        - match: '{{valid_variables}}'
-          scope: variable.other.dbc
-        - match: $\n
-          pop: true
-
-  expressions:
-    - match: \(
+    - match: '{{numbers}}'
+      scope: constant.numeric.dbc
+    - meta_scope: meta.parameters.dbc
+    - include: expression-seperators
+    - match: '~{{valid_functions}}'
+      scope: variable.function.dbc
+    - match: '{{valid_variables}}'
+      scope: variable.other.dbc
+    - match: $\n
+      pop: true
 
   verb_call:
     - match: '^\s+{{valid_functions}}'
       scope: variable.function
 
   call_function:
-    - match: \s+(?i)call\s{{valid_functions}}
-      scope: variable.function.call.dbc
+    - match: (?i)(call)(\s{{valid_functions}})
+      captures:
+        1: support.function.dbc
+        2: variable.function.call.dbc
+    - match: $\n
+      pop: true
+    - match: \s(?i)with\s
+      scope: constant.other.placeholder
+      set: parameters
+    - match: ''
+      set:
+        - meta_scope: meta.function-call.dbc
+        - include: conditional-keywords
+        - match: ''
+          pop: true
+

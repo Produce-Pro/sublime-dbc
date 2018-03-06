@@ -18,7 +18,7 @@ VAR.MAX$ EQU 2
 .         ^ storage.modifier.dbc
 .            ^ constant.numeric.dbc
 
-VAR_ CHAR 1[34,VAR.MAX$]
+VAR_ CHAR 1[34,VAR.MAX$], INITIAL "YES","NO",1,3
 . <- entity.name.type.dbc
 .      ^ storage.type.dbc
 .         ^ constant.numeric.dbc
@@ -32,15 +32,19 @@ VAR@ CHAR @
 .      ^ storage.type.dbc
 .         ^ storage.modifier.dbc
 
-LABEL LABEL @
+TEST_LABEL LABEL @
 . <- entity.name.function.dbc
-.      ^ storage.type.dbc
-.           ^ storage.modifier.dbc
+.            ^ storage.type.dbc
+.                ^ storage.modifier.dbc
+TEST_EXTERNAL EXTERNAL
 
-FORMATTED_CHAR CHAR 30  ..
+FORMATTED_CHAR CHAR 30, INITIAL "YES"
 UPDATE_CHAR EXTERNAL
 
+.LIST@          LIST @
+
 SOH$LST        LIST
+.                 ^ meta.function.dbc meta.list.dbc storage.type.dbc
 SOHSONO        CHAR 8        SONO          1-    8 S/O no
 SOHCUST        CHAR 6        CUST          9-   14 Customer
 SOHSHIP        CHAR 6        SHIP         15-   20 Ship to
@@ -60,7 +64,27 @@ SOHDLDT        CHAR 8        DATE         83-   90 Expected delivery date
 SOHPKDT        CHAR 8        DATE         91-   98 Pick date
 SOHPKTM        CHAR 6        TIME         99-  104 Pick time
 SOHSHDT        CHAR 8        DATE        105-  112 Ship date
+SOHPDAM        FORM 9.2      AMNT9       169-  180 Product amount
+. <- meta.function.dbc meta.list.dbc meta.type.dbc entity.name.type.dbc
+.               ^ meta.function.dbc meta.list.dbc meta.type.dbc storage.type.dbc
+SOHNBRI        FORM 6.2      QUAN        181-  189 Number of items
+SOHLINS        FORM 3                    190-  192 Number of detail lines
+SOHTACS        FORM 9.2      AMNT9       193-  204 Total actual cost
+SOHSHCS        FORM 9.2      AMNT9       205-  216 Total shipping cost
+SOHWGHT        FORM 7.3      WGHT        217-  227 Total weight
+SOHNEWI        CHAR 1        YN          228-  228 New items added?
+SOHBLDF        CHAR 1[3]     YN          229-  229 Build pending flag?
+SOHIVCT        FORM 2                    230-  231 Invoice printed count
                LISTEND
+.                  ^ meta.function.dbc meta.list.dbc storage.type.dbc
+
+
+BOOL_TEST      FORM 1[3], 1,0,1
+. <- meta.function.dbc meta.type.dbc entity.name.type.dbc
+.               ^ meta.function.dbc meta.type.dbc storage.type.dbc
+.                    ^ meta.function.dbc meta.brackets.dbc punctuation.section.brackets.begin.dbc
+.                       ^^ meta.function.dbc storage.modifier.dbc
+.                         ^ meta.function.dbc constant.numeric.dbc
 
      CALL SOMETHING
      MOVE 1 TO Y
@@ -70,7 +94,7 @@ SOHSHDT        CHAR 8        DATE        105-  112 Ship date
      FILL " " IN TYPE
      LOOP
           GETPARM KEYWORD, VAR
-          UNTIL OVER
+          UNTIL IF OVER
           SWITCH KEYWORD
                CASE "ARRAY"
                     MOVEADR VAR TO VAR@
