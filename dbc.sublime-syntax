@@ -69,7 +69,7 @@ contexts:
       scope: punctuation.definition.variable.dbc
 
   routine-definition:
-    - match: (^{{valid_functions}}{{sp}}+((?i)(routine|lroutine)\b))
+    - match: ^({{valid_functions}}){{sp}}+((?i)(routine|lroutine)\b)
       captures:
         1: entity.name.function.dbc
         2: storage.type.routine.start.dbc
@@ -529,10 +529,10 @@ contexts:
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.call.dbc
-      push:
-        - match: "{{sp}}+"
-          push: eol-if-keyword
-        - match: ''
+      set:
+        - match: '{{sp}}'
+          set: eol-if-keyword
+        - match: '$\n'
           pop: true
 
   call-keywords:
