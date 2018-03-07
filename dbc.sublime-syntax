@@ -34,7 +34,6 @@ contexts:
     - include: variable-definitions
     - include: statements
 
-
   statements:
     - match: '{{pre}}'
       push:
@@ -71,11 +70,6 @@ contexts:
         - meta_scope: invalid.illegal.dbc
         - match: $\n
           pop: true
-# ((?i)break|switch|case|continue|do|else|for|if|return|switch|while|endif|loop|until|repeat|endswitch)'
-
-  # switch
-  # if
-  # invalid keywords when not in those
 
   keywords:
     - include: if-keyword
