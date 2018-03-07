@@ -182,3 +182,12 @@ TEST.SECONDROUTINE ROUTINE
 .     ^ meta.routine.body.dbc storage.type.routine.end.dbc - meta.compiler-directive
 
      CALL TEST
+
+     CONTINUE
+.     ^ meta.generic.statement.dbc invalid.illegal.dbc
+     ENDROUTINE
+.     ^ meta.generic.statement.dbc invalid.illegal.dbc
+
+     #INFALID
+.     ^ meta.generic.statement.dbc invalid.illegal.dbc
+

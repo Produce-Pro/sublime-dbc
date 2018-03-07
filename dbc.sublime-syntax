@@ -106,11 +106,10 @@ contexts:
 
 
   invalid-keywords:
-    - match: (?i)continue|break|repeat|endif|endswitch
+    - match: (?i)continue|break|repeat|endif|endswitch|endroutine
       scope: invalid.illegal.dbc
-
-
-
+    - match: (?i)[\%\#]endif
+      scope: invalid.illegal.dbc
 
   if-keyword:
     - match: (?i)if\b
@@ -128,9 +127,6 @@ contexts:
     - match: '\('
       scope: punctuation.section.parentheses.begin.dbc
       push: if-parentheses
-
-    # - match: \W
-    #   set: eol-invalid
 
   if-parentheses:
     - meta_scope: meta.parentheses.if.dbc
@@ -352,12 +348,12 @@ contexts:
       scope: storage.modifier.dbc
 
   compiler-directive:
-    - match: '[\#\%]'
+    - match: '[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)'
       scope: storage.modifier.dbc
-      push:
-        - match: '(?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)'
-          scope: storage.modifier.dbc
-          set: compiler-directive-parameters
+      push: compiler-directive-parameters
+    - match: '[\#\%]\w*\b'
+      scope: invalid.illegal.dbc
+
 
   compiler-directive-parameters:
     - include: parameters
