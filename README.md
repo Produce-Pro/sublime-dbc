@@ -16,10 +16,8 @@ Copy to the files to the DBC directory
 ## TODO ##
 
 - Handle verbcalls
-- Implement missing keywords:
+- Implement missing ke1ywords:
 	add
-	and
-	append
 	beep
 	branch
 	bump
@@ -30,7 +28,6 @@ Copy to the files to the DBC directory
 	charsave
 	check10
 	check11
-	chop
 	clear
 	clearadr
 	clearendkey
@@ -65,7 +62,6 @@ Copy to the files to the DBC directory
 	extend
 	external
 	filepi
-	fill
 	flagrestore
 	flagsave
 	flusheof
@@ -104,7 +100,6 @@ Copy to the files to the DBC directory
 	makevar
 	match
 	mod
-	move
 	moveadr
 	movefptr
 	movelabel
@@ -117,9 +112,7 @@ Copy to the files to the DBC directory
 	nformat
 	noeject
 	noreturn
-	not
 	open
-	or
 	pack
 	packlen
 	pause
@@ -177,7 +170,6 @@ Copy to the files to the DBC directory
 	sqlcode
 	sqlexec
 	sqlmsg
-	squeeze
 	staterestore
 	statesave
 	statesize
@@ -196,7 +188,6 @@ Copy to the files to the DBC directory
 	traprestore
 	trapsave
 	trapsize
-	trim
 	type
 	unlink
 	unload
