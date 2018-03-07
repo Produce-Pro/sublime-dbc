@@ -19,7 +19,7 @@ variables:
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   assignment_keywords: '(?i)move|to|with'
-  alter_keywords: '(?i)sqznum|form|char|squeeze|trim|size|length'
+  alter_keywords: '(?i)sqznum|form|char|squeeze|trim|size|length|chop'
 
 contexts:
 
@@ -41,7 +41,7 @@ contexts:
         - meta_scope: meta.generic.statement.dbc
         - include: compiler-directive
         - include: keywords
-        - include: call_function
+        - include: call-function
         - match: $\n
           pop: true
 
@@ -78,17 +78,49 @@ contexts:
   # invalid keywords when not in those
 
   keywords:
-
     - include: if-keyword
     - include: switch-keyword
     - include: loop-keyword
     - include: for-keyword
+    - include: general-keywords
+    - include: invalid-keywords
+
+  general-keywords:
+    - match: (?i)return
+      scope: keyword.control.flow.dbc
+      push:
+        - match: "{{sp}}+"
+          push: eol-if-keyword
+        - match: ''
+          pop: true
+
+    - match: (?i)(goto)(\s{{valid_functions}})
+      captures:
+        1: keyword.control.flow.dbc
+        2: variable.function.call.dbc
+      push:
+        - match: "{{sp}}+"
+          push: eol-if-keyword
+        - match: ''
+          pop: true
+
+
+  invalid-keywords:
+    - match: (?i)continue|break|repeat|endif|endswitch
+      scope: invalid.illegal.dbc
+
+
 
 
   if-keyword:
     - match: (?i)if\b
       scope: keyword.control.dbc
-      push: if-parameters
+      push: if-keyword-parameters
+
+  if-keyword-parameters:
+    - include: if-parameters
+    - match: $\n
+      set: if-keyword-body
 
   if-parameters:
     - match: '{{constants}}'
@@ -97,12 +129,11 @@ contexts:
       scope: punctuation.section.parentheses.begin.dbc
       push: if-parentheses
 
-    - match: $\n
-      set: if-keyword-body
     # - match: \W
     #   set: eol-invalid
 
   if-parentheses:
+    - meta_scope: meta.parentheses.if.dbc
     - match: '{{constants}}'
       scope: constant.language.dbc
     - match: '<\=|>\=|\=|<|>|\!\='
@@ -118,22 +149,10 @@ contexts:
     - match: \+|\-|/|%|\||\^|~|!|\*
       scope: keyword.operator.arithmetic.dbc
     - include: number-constants
-    - match: '{{alter_keywords}}'
+    - match: '\b({{alter_keywords}})\b'
       scope: support.function.dbc
-    - match: '{{valid_variables}}'
+    - match: '\b({{valid_variables}})\b'
       scope: variable.other.dbc
-
-
-  if-keyword1:
-    - match: '{{sp}}*{{valid_variables}}'
-      scope: variable.other.dbc
-      set: if-keyword3
-    - include: eol-invalid
-
-  if-keyword3:
-    - match: '\n'
-      set: if-keyword-body
-    - include: eol-invalid
 
   if-keyword-body:
     - meta_scope: meta.control.if.dbc
@@ -142,7 +161,7 @@ contexts:
       pop: true
     - match: '{{pre}}(?i)else if'
       scope: keyword.control.dbc
-      set: if-parameters
+      set: if-keyword-parameters
     - match: '{{pre}}(?i)else'
       scope: keyword.control.dbc
     - include: main
@@ -152,8 +171,7 @@ contexts:
       scope: keyword.control.dbc
       push:
         - meta_scope: meta.control.if.dbc
-        # - include: parentheses
-        - include: flag-constants
+        - include: if-parameters
         - match: $\n
           pop: true
     - match: ''
@@ -305,7 +323,7 @@ contexts:
           scope: punctuation.section.brackets.end.dbc
           pop: true
 
-        - include: parameters
+        - include: eol-parameters
 
 
   parentheses:
@@ -336,16 +354,26 @@ contexts:
   compiler-directive:
     - match: '[\#\%]'
       scope: storage.modifier.dbc
-      set:
+      push:
         - match: '(?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)'
           scope: storage.modifier.dbc
-          set:
-            - include: parameters
+          set: compiler-directive-parameters
 
-        - match: '(?i)(else|endif)'
-          scope: storage.modifier.dbc
-          set:
-            - include: eol-comments
+  compiler-directive-parameters:
+    - include: parameters
+    - match: $\n
+      set: compiler-directive-body
+
+  compiler-directive-body:
+    - meta_scope: meta.compiler-directive.dbc
+    - match: '{{pre}}(?i)[\#\%](else|endif)'
+      scope: storage.modifier.dbc
+      set:
+        - include: eol-comments
+        - match: ''
+          pop: true
+    - include: main
+
 
   constant-types:
     - match: (^{{valid_variables}})(\s+((?i)(define|equ)))
@@ -375,7 +403,7 @@ contexts:
             - include: brackets
             - match: ', (?i)initial'
               scope: storage.modifier.dbc
-              set: parameters
+              set: eol-parameters
             - include: eol-comments
         - match: \s\@
           scope: storage.modifier.dbc
@@ -383,7 +411,7 @@ contexts:
             - include: brackets
             - match: ', (?i)initial'
               scope: storage.modifier.dbc
-              set: parameters
+              set: eol-parameters
             - include: eol-comments
         - match: $\n
           pop: true
@@ -402,7 +430,7 @@ contexts:
             - include: brackets
             - match: ', '
               scope: storage.modifier.dbc
-              set: parameters
+              set: eol-parameters
             - include: eol-comments
         - match: \s\@
           scope: storage.modifier.dbc
@@ -410,7 +438,7 @@ contexts:
             - include: brackets
             - match: ', '
               scope: storage.modifier.dbc
-              set: parameters
+              set: eol-parameters
             - include: eol-comments
         - match: $\n
           pop: true
@@ -480,8 +508,9 @@ contexts:
 
 
   label-definition:
-    - match: ^{{valid_functions}}\n
-      scope: entity.name.function.dbc
+    - match: ^({{valid_functions}})(\n)
+      captures:
+        1: entity.name.function.dbc
 
   routine-definition:
     - match: (^{{valid_functions}}\s+((?i)(routine|lroutine)))
@@ -512,24 +541,27 @@ contexts:
       set: eol-comments
     - include: main
 
+  eol-parameters:
+    - meta_scope: meta.parameters.dbc
+    - include: parameters
+    - match: $\n
+      pop: true
 
   parameters:
+    - meta_scope: meta.parameters.dbc
     - match: '{{numbers}}'
       scope: constant.numeric.dbc
-    - meta_scope: meta.parameters.dbc
     - include: expression-seperators
     - match: '~{{valid_functions}}'
       scope: variable.function.dbc
     - match: '{{valid_variables}}'
       scope: variable.other.dbc
-    - match: $\n
-      pop: true
 
   verb_call:
     - match: '^\s+{{valid_functions}}'
       scope: variable.function
 
-  call_function:
+  call-function:
     - match: (?i)(call)(\s{{valid_functions}})
       captures:
         1: support.function.dbc
@@ -538,7 +570,7 @@ contexts:
       pop: true
     - match: \s(?i)with\s
       scope: constant.other.placeholder
-      set: parameters
+      set: eol-parameters
     - match: ''
       set:
         - meta_scope: meta.function-call.dbc
