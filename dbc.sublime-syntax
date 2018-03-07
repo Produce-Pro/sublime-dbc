@@ -555,7 +555,20 @@ contexts:
 
   support-functions:
     # function x,y,z
+    - match: (?i)(clear|clearadr)\b
+      scope: support.function.builtin.dbc
+      set:
+        - include: parameters
+        - match: $\n
+          pop: true
     # function x to y
+    - match: (?i)(moveadr){{sp}}+
+      scope: support.function.builtin.dbc
+      set:
+        - include: parameters
+        - include: operand-seperators
+        - match: $\n
+          pop: true
     # function x to y [giving z]
     # function x to y,z,...
     - match: (?i)(move|fill|chop|trim|squeeze)\b
