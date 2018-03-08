@@ -15,8 +15,6 @@ Copy to the files to the DBC directory
 
 ## TODO ##
 
-- verb calls
-- verb definitions
 - primary keywords:
 	add
 	close, closeall
