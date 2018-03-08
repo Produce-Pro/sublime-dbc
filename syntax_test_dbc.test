@@ -9,7 +9,7 @@
 .         ^ meta.include.dbc string.unquoted
 
 TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
-. <- entity.name.function.dbc
+. <- entity.name.function.routine.dbc
 .               ^ storage.type.routine.start.dbc
 .                      ^ variable.parameter.dbc
 .                          ^ variable.parameter.dbc
@@ -52,6 +52,7 @@ UPDATE_CHAR EXTERNAL
 SIZEX FORM 5.2
 
 RANDOM_LABEL
+. <- meta.routine.body.dbc entity.name.function.label.dbc
      RETURN
 
 .LIST@          LIST @
@@ -204,11 +205,14 @@ EXIT
      RETURN
 .     ^ meta.routine.body.dbc keyword.control.flow.dbc - meta.control.if.dbc
 
+     CHAIN "CAEXIT"
+
+
      #IFDEF SOHDEF
 .      ^ storage.modifier.dbc
 .               ^ variable.other.dbc
 TEST.SECONDROUTINE ROUTINE
-. ^ meta.routine.body.dbc entity.name.function.dbc
+. ^ meta.routine.body.dbc entity.name.function.routine.dbc
 .                   ^ meta.compiler-directive.dbc storage.type.routine.start.dbc
      ENDROUTINE
 .     ^ meta.routine.body.dbc meta.routine.body.dbc storage.type.routine.end.dbc

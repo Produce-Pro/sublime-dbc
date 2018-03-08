@@ -16,24 +16,51 @@ Copy to the files to the DBC directory
 ## TODO ##
 
 - verb calls
-- keyword:
+- verb definitions
+- primary keywords:
 	add
-	beep
-	branch
-	bump
-	ccall
-	chain
-	change
-	charrestore
-	charsave
-	check10
-	check11
-	clear
-	clearadr
-	clearendkey
-	clearlabel
-	clock
 	close, closeall
+	debug
+	deletek
+	divide
+	loadmod
+	movefptr
+	movelabel
+	movelength
+	movelptr
+	movelv
+	movesize
+	movevl
+	multiply
+	open
+	read
+	readgplk
+	readkg
+	readkglk
+	readkgp
+	readkp
+	readkplk
+	readks
+	readkslk
+	readlk
+	replace
+	rollout
+	scan
+	search
+	shutdown
+	stop
+	subtract
+	unload
+	wait
+	write
+
+- trap functions
+- remaining keyword:
+	beep
+	bump
+	change
+	clearendkey
+	clock
 	cmatch
 	cmove
 	comclr
@@ -45,13 +72,9 @@ Copy to the files to the DBC directory
 	comwait
 	console
 	count
-	debug
 	delete
-	deletek
 	destroy
 	disable
-	display
-	divide
 	draw
 	edit
 	empty
@@ -60,10 +83,7 @@ Copy to the files to the DBC directory
 	erase
 	execute
 	extend
-	external
 	filepi
-	flagrestore
-	flagsave
 	flusheof
 	format
 	fposit
@@ -81,88 +101,44 @@ Copy to the files to the DBC directory
 	getposition
 	getprinters
 	getwindow
-	goto
 	hide
-	if, else, endif
 	insert
 	keyin
 	lcmove
 	lenset
 	link
-	load
 	loadadr
 	loadlabel
-	loadmod
 	loadparm
-	loop, break, while, until, continue, repeat
 	make
 	makeglobal
 	makevar
 	match
 	mod
-	moveadr
-	movefptr
-	movelabel
-	movelength
-	movelptr
-	movelv
-	movesize
-	movevl
-	multiply
 	nformat
 	noeject
-	noreturn
-	open
-	pack
-	packlen
 	pause
-	perform
 	ploadmod
 	popreturn
 	prepare
-	print
 	pushreturn
 	put
 	putfirst
 	query
-	read
-	readgplk
-	readkg
-	readkglk
-	readkgp
-	readkp
-	readkplk
-	readks
-	readkslk
-	readlk
 	recv
 	recvclr
 	release
 	rename
-	replace
 	reposit
-	reset
 	resetparm
-	retcount
-	return
-	rollout, clientrollout
 	rotate
-	routine, lroutine, endroutine
-	scan
-	scrnrestore
-	scrnsave
-	scrnsize
-	search
 	send
 	sendclr
-	set
 	setendkey
-	setflag
 	setlptr
 	setnull
 	sformat
 	show
-	shutdown
 	sound
 	splclose
 	splopen
@@ -170,36 +146,14 @@ Copy to the files to the DBC directory
 	sqlcode
 	sqlexec
 	sqlmsg
-	staterestore
-	statesave
-	statesize
-	stop
-	store
 	storeadr
 	storelabel
-	subtract
-	switch, case, default, endswitch
 	tabpage
 	test
-	testadr
-	testlabel
-	trap
-	trapclr
-	traprestore
-	trapsave
-	trapsize
-	type
 	unlink
-	unload
 	unlock
-	unpack
 	unpacklist
 	updatab
 	update
-	wait
 	weof
-	winrestore
-	winsave
-	winsize
-	write
 	xor

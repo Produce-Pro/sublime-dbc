@@ -18,8 +18,11 @@ variables:
   constants: '(?i)not|eos|over|equal|less|zero'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
-  assignment_keywords: '(?i)move|to|with'
   alter_paren_keywords: '(?i)sqznum|form|char|squeeze|trim|size|length|chop'
+  system_functions1: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest'
+  system_functions2: '(?i)clear|clearadr|set|reset'
+  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace'
+  system_functions4: '(?i)move|fill|pack|unpack|packlen|type'
 
 contexts:
 
@@ -74,7 +77,7 @@ contexts:
   routine-definition:
     - match: ^({{valid_functions}}){{sp}}+((?i)(routine|lroutine)\b)
       captures:
-        1: entity.name.function.dbc
+        1: entity.name.function.routine.dbc
         2: storage.type.routine.start.dbc
       push:
         - routine-definition-body
@@ -103,7 +106,7 @@ contexts:
   label-definition:
     - match: ^({{valid_functions}})(\n)
       captures:
-        1: entity.name.function.dbc
+        1: entity.name.function.label.dbc
 
   variable-definitions:
     - include: standard-types
@@ -151,8 +154,20 @@ contexts:
           captures:
             1: string.unquoted
           pop: true
-        - match: ''
-          set: eol-invalid
+        - match: '$\n'
+          pop: true
+
+  chain-to:
+    - match: '{{pre}}(?i)chain{{sp}}'
+      scope: support.type.chain.dbc
+      push:
+        - meta_scope: meta.chain.dbc
+        - match: '({{valid_variables}})\n'
+          captures:
+            1: string.unquoted
+          pop: true
+        - match: '$\n'
+          pop: true
 
   constant-types:
     - match: (^{{valid_variables}})({{sp}}+((?i)(define|equ)\b))
@@ -254,6 +269,7 @@ contexts:
   statements:
     - include: compiler-directive
     - include: file-includes
+    - include: chain-to
     - include: if-keyword
     - include: loop-keyword
     - include: for-keyword
@@ -380,7 +396,7 @@ contexts:
 
   for-keyword1:
     - meta_scope: meta.control.for.parameters.dbc
-    - match: '{{valid_variables}}'
+    - match: '{{valid_variables}}\b'
       scope: variable.other.dbc
       set: for-keyword2
     - include: eol-invalid
@@ -395,7 +411,7 @@ contexts:
     - include: eol-invalid
 
   for-keyword3:
-    - match: '{{valid_variables}}'
+    - match: '{{valid_variables}}\b'
       scope: variable.other.dbc
       set: for-keyword4
     - match: '{{numbers}}'
@@ -418,6 +434,7 @@ contexts:
       scope: variable.other.dbc
       set: for-keyword-body
     - match: '{{numbers}}'
+      scope: constant.numeric.dbc
       set: for-keyword-body
     - include: eol-invalid
 
@@ -511,7 +528,7 @@ contexts:
       scope: punctuation.separator.dbc
 
   operand-seperators:
-    - match: '{{sp}}+{{operands}}'
+    - match: '{{sp}}+{{operands}}\b'
       scope: support.type.dbc
 
 
@@ -569,7 +586,7 @@ contexts:
   call-keywords:
     - match: '{{pre}}(?i)(call)(\s{{valid_functions}})'
       captures:
-        1: support.function.builtin.dbc
+        1: keyword.control.flow.dbc
         2: variable.function.call.dbc
       push:
       - meta_scope: meta.function-call.dbc
@@ -583,32 +600,107 @@ contexts:
       - match: ''
         pop: true
 
+    - match: '{{pre}}((?i)branch)\b'
+      captures:
+        1: keyword.control.flow.dbc
+      push:
+        - meta_scope: meta.parameters.dbc
+        - match: '{{sp}}+{{valid_variables}}\b'
+          scope: variable.other.dbc
+          set:
+            - meta_scope: meta.parameters.functions.dbc
+            - include: expression-seperators
+            - match: '\b{{valid_functions}}\b'
+              scope: variable.function.dbc
+            - include: operand-seperators
+            - match: $\n
+              pop: true
 
   support-functions:
+    - match: '{{pre}}((?i)setflag)\b'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - meta_scope: meta.parameters.dbc
+        - match: '{{sp}}+{{constants}}'
+          scope: constant.language.dbc
+        - match: $\n
+          pop: true
+
+
+
+    - match: '{{pre}}((?i)load|store)\b'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - meta_scope: meta.parameters.dbc
+        - match: '{{sp}}+{{valid_variables}}\b'
+          scope: variable.other.dbc
+          set:
+            - meta_scope: meta.parameters.dbc
+            - include: expression-seperators
+            - match: '\b{{valid_variables}}\b'
+              scope: variable.other.dbc
+            - include: operand-seperators
+            - match: $\n
+              pop: true
+
+    - match: '{{pre}}((?i)display|print)\b'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - meta_scope: meta.parameters.dbc
+        - include: parameters
+        - match: $\n
+          pop: true
+
+    # function x
+    - match: '{{pre}}({{system_functions1}})\b'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - meta_scope: meta.parameters.dbc
+        - match: '\b{{numbers}}\b'
+          scope: constant.numeric.dbc
+        - match: '\b{{valid_variables}}\b'
+          scope: variable.other.dbc
+        - match: $\n
+          pop: true
+
+
     # function x,y,z
-    - match: '{{pre}}(?i)(clear|clearadr)\b'
-      scope: support.function.builtin.dbc
+    - match: '{{pre}}({{system_functions2}})\b'
+      captures:
+        1: support.function.builtin.dbc
       push:
         - meta_scope: meta.parameters.dbc
         - include: parameters
         - match: $\n
           pop: true
+
     # function x to y
-    - match: '{{pre}}(?i)(moveadr){{sp}}+'
-      scope: support.function.builtin.dbc
+    - match: '{{pre}}({{system_functions3}})\b'
+      captures:
+        1: support.function.builtin.dbc
       push:
         - meta_scope: meta.parameters.dbc
-        - include: parameters
+        - match: '\b{{numbers}}\b'
+          scope: constant.numeric.dbc
+        - match: '\b{{valid_variables}}\b'
+          scope: variable.other.dbc
         - include: operand-seperators
         - match: $\n
           pop: true
-    # function x to y [giving z]
+
     # function x to y,z,...
-    - match: '{{pre}}(?i)(move|fill|chop|trim|squeeze|pack)\b'
-      scope: support.function.builtin.dbc
+    - match: '{{pre}}({{system_functions4}})\b'
+      captures:
+        1: support.function.builtin.dbc
       push:
         - meta_scope: meta.parameters.dbc
         - include: parameters
         - include: operand-seperators
         - match: $\n
           pop: true
+
+    # function x to y [giving z]
