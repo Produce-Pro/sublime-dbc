@@ -63,6 +63,9 @@ contexts:
         - match: '"'
           scope: punctuation.definition.string.end.dbc
           pop: true
+        - match: $\n
+          scope: invalid.illegal.dbc
+          pop: true
 
   variable-punctuation:
     - match: \$\.
@@ -586,6 +589,7 @@ contexts:
     - match: '{{pre}}(?i)(clear|clearadr)\b'
       scope: support.function.builtin.dbc
       push:
+        - meta_scope: meta.parameters.dbc
         - include: parameters
         - match: $\n
           pop: true
@@ -593,15 +597,17 @@ contexts:
     - match: '{{pre}}(?i)(moveadr){{sp}}+'
       scope: support.function.builtin.dbc
       push:
+        - meta_scope: meta.parameters.dbc
         - include: parameters
         - include: operand-seperators
         - match: $\n
           pop: true
     # function x to y [giving z]
     # function x to y,z,...
-    - match: '{{pre}}(?i)(move|fill|chop|trim|squeeze)\b'
+    - match: '{{pre}}(?i)(move|fill|chop|trim|squeeze|pack)\b'
       scope: support.function.builtin.dbc
       push:
+        - meta_scope: meta.parameters.dbc
         - include: parameters
         - include: operand-seperators
         - match: $\n

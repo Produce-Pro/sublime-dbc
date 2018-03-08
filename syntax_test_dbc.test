@@ -221,6 +221,10 @@ TEST.SECONDROUTINE ROUTINE
 
      ENDIF
 
+     PACK CHAR4 WITH TEST,CHAR4,(CHOP CHAR2):
+          (SQUEEZE TESTING),"UNFINISHED STRING
+.                                             ^ meta.parameters.dbc string.quoted.double.dbc invalid.illegal.dbc
+
      CALL TEST WITH (CHOP (SQUEEZE CHAR1) AND :
 
 . <- meta.parameters.dbc meta.parameters.parentheses.dbc invalid.illegal.dbc
