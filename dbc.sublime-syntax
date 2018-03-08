@@ -302,25 +302,30 @@ contexts:
 
   if-parentheses:
     - meta_scope: meta.parentheses.if.dbc
-    - match: '{{constants}}\b'
-      scope: constant.language.dbc
-    - match: '(<\=|>\=|\=|<|>|\!\=)\b'
-      scope: keyword.operator.comparison.dbc
-    - match: (?i)(or|and)\b
-      scope: keyword.operator.word.dbc
-    - include: parentheses-body
     - match: '\)'
       scope: punctuation.section.parentheses.end.dbc
       pop: true
+    - match: '{{sp}}*:$\n'
+      scope: punctuation.separator.dbc
+    - match: '\b{{constants}}\b'
+      scope: constant.language.dbc
+    - match: '(<\=|>\=|\=|<|>|\!\=)'
+      scope: keyword.operator.comparison.dbc
+    - match: \b(?i)(or|and)\b
+      scope: keyword.operator.word.dbc
+    - include: parentheses-body
 
   parentheses-body:
-    - match: \+|\-|/|%|\||\^|~|!|\*
+    - match: (\+|\-|/|%|\||\^|~|!|\*)
       scope: keyword.operator.arithmetic.dbc
     - include: number-constants
     - match: '\b({{alter_paren_keywords}})\b'
       scope: support.function.builtin.dbc
     - match: '\b({{valid_variables}})\b'
       scope: variable.other.dbc
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      push: if-parentheses
 
   if-keyword-body:
     - meta_scope: meta.control.if.dbc

@@ -15,8 +15,9 @@ Copy to the files to the DBC directory
 
 ## TODO ##
 
-- Handle verbcalls
-- Implement missing ke1ywords:
+- parenthesis to combine variables
+- verb calls
+- keyword:
 	add
 	beep
 	branch
