@@ -140,6 +140,21 @@ contexts:
     - include: nested
 
 
+
+  file-includes:
+    - match: '{{pre}}(?i)inc{{sp}}'
+      scope: support.type.include.dbc
+      push:
+        - meta_scope: meta.include.dbc
+        - match: '({{valid_variables}})\n'
+          captures:
+            1: string.unquoted
+          pop: true
+        - match: ''
+          set: eol-invalid
+
+
+
   constant-types:
     - match: (^{{valid_variables}})({{sp}}+((?i)(define|equ)\b))
       captures:
@@ -239,6 +254,7 @@ contexts:
 
   statements:
     - include: compiler-directive
+    - include: file-includes
     - include: if-keyword
     - include: loop-keyword
     - include: for-keyword

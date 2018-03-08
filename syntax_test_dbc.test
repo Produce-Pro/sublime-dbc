@@ -1,5 +1,13 @@
 . SYNTAX TEST "Packages/dbc/dbc.sublime-syntax"
 
+
+     INC COMMON
+.     ^ support.type.include.dbc
+.         ^ meta.include.dbc string.unquoted
+     INC TEST.VRB
+.     ^ support.type.include.dbc
+.         ^ meta.include.dbc string.unquoted
+
 TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 . <- entity.name.function.dbc
 .               ^ storage.type.routine.start.dbc
