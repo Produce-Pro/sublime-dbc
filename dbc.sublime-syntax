@@ -32,6 +32,7 @@ contexts:
 
   main:
     - include: variable-punctuation
+    - include: verb-definition
     - include: routine-definition
     - include: label-definition
     - include: variable-definitions
@@ -73,6 +74,25 @@ contexts:
   variable-punctuation:
     - match: \$\.
       scope: punctuation.definition.variable.dbc
+
+  verb-definition:
+    - match: ^({{valid_functions}}){{sp}}+((?i)(verb)\b)
+      captures:
+        1: entity.name.function.verb.dbc
+        2: storage.type.verb.dbc
+      push: verb-definition-parameters
+
+  verb-definition-parameters:
+    - meta_scope: meta.verb.parameters.dbc
+    - match: $\n
+      pop: true
+    - include: expression-seperators
+    - match: ([\#\=])\b((?i)(array|afile|any|carray|carray1|carray2|carray3|cnvar|cnvarlit|comfile|cvar|cvarlit|device|file|ifile|image|list|label|nvar|nvarlit|varlit))\b
+      captures:
+        1: keyword.operator.assignment.dbc
+        2: variable.language.dbc
+    - match: \b({{valid_variables}})\b
+      scope: variable.parameter.dbc
 
   routine-definition:
     - match: ^({{valid_functions}}){{sp}}+((?i)(routine|lroutine)\b)
@@ -410,6 +430,7 @@ contexts:
       set: for-keyword3
     - include: eol-invalid
 
+
   for-keyword3:
     - match: '{{valid_variables}}\b'
       scope: variable.other.dbc
@@ -417,7 +438,18 @@ contexts:
     - match: '{{numbers}}'
       scope: constant.numeric.dbc
       set: for-keyword4
+    - include: for-keyword3-parens
     - include: eol-invalid
+
+  for-keyword3-parens:
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      set:
+          - match: '\)'
+            scope: punctuation.section.parentheses.begin.dbc
+            set: for-keyword4
+          - include: for-keyword3-parens
+          - include: parentheses-body
 
   for-keyword4:
     - match: '{{sp}}+{{operands}}{{sp}}+'
@@ -436,7 +468,18 @@ contexts:
     - match: '{{numbers}}'
       scope: constant.numeric.dbc
       set: for-keyword-body
+    - include: for-keyword5-parens
     - include: eol-invalid
+
+  for-keyword5-parens:
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      set:
+          - match: '\)'
+            scope: punctuation.section.parentheses.begin.dbc
+            set: for-keyword-body
+          - include: for-keyword5-parens
+          - include: parentheses-body
 
   for-keyword-body:
     - match: \n
@@ -510,17 +553,6 @@ contexts:
 
         - include: eol-parameters
 
-
-  parentheses:
-    - match: \(
-      scope: punctuation.section.parentheses.begin.dbc
-      push:
-        - meta_scope: meta.parentheses.dbc
-        - match: \)
-          scope: punctuation.section.parentheses.end.dbc
-          pop: true
-        - include: number-constants
-
   expression-seperators:
     - match: '{{sp}}*,{{sp}}*'
       scope: punctuation.separator.dbc
@@ -530,7 +562,6 @@ contexts:
   operand-seperators:
     - match: '{{sp}}+{{operands}}\b'
       scope: support.type.dbc
-
 
   eol-parameters:
     - meta_scope: meta.parameters.dbc
@@ -545,18 +576,26 @@ contexts:
       scope: constant.numeric.dbc
     - match: '\b~{{valid_functions}}\b'
       scope: variable.function.dbc
-    - match: '\b{{valid_variables}}\b'
+    - match: '\b{{valid_variables}}(?!=)\b'
       scope: variable.other.dbc
+    - match: \b({{valid_variables}})(\=)\b({{valid_variables}})\b
+      captures:
+        1: variable.parameter.dbc
+        2: keyword.operator.assignment.dbc
+        3: variable.other.dbc
     - match: \(
+      scope: punctuation.section.parentheses.begin.dbc
       push: parameter-parens
 
 
   parameter-parens:
     - meta_scope: meta.parameters.parentheses.dbc
     - match: \)
+      scope: punctuation.section.parentheses.end.dbc
       pop: true
     - include: parentheses-body
     - match: \(
+      scope: punctuation.section.parentheses.begin.dbc
       push: parameter-parens
     - match: '{{sp}}*:$\n'
       scope: punctuation.separator.dbc
@@ -600,7 +639,7 @@ contexts:
       - match: ''
         pop: true
 
-    - match: '{{pre}}((?i)branch)\b'
+    - match: '{{pre}}((?i)branch|perform)\b'
       captures:
         1: keyword.control.flow.dbc
       push:

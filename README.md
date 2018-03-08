@@ -21,7 +21,6 @@ Copy to the files to the DBC directory
 	add
 	close, closeall
 	debug
-	deletek
 	divide
 	loadmod
 	movefptr
@@ -32,6 +31,18 @@ Copy to the files to the DBC directory
 	movesize
 	movevl
 	multiply
+	replace
+	rollout
+	scan
+	search
+	shutdown
+	stop
+	subtract
+	unload
+	wait
+
+- file keywords
+	deletek
 	open
 	read
 	readgplk
@@ -43,17 +54,7 @@ Copy to the files to the DBC directory
 	readks
 	readkslk
 	readlk
-	replace
-	rollout
-	scan
-	search
-	shutdown
-	stop
-	subtract
-	unload
-	wait
 	write
-
 - trap functions
 - remaining keyword:
 	beep

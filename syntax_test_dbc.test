@@ -157,8 +157,8 @@ BOOL_TEST      FORM 1[3], 1,0,1
      FORMATVERB IN="TEST",OUT=FORMATTED_CHAR
      GOTO EXIT IF EOS
 
-     CALL UPDATE_CHAR WITH "TEST",FORMATTED_CHAR
-.     ^ meta.routine.body.dbc support.function.builtin.dbc
+     CALL UPDATE_CHAR WITH "TEST",FORMATTED_CHAR,XXX=TYLER,CHAR4
+.     ^ meta.routine.body.dbc keyword.control.flow.dbc
 .          ^ meta.routine.body.dbc variable.function.call.dbc - meta.control.loop.dbc
 .                      ^ meta.routine.body.dbc meta.parameters.dbc support.type.dbc
 .                            ^ meta.routine.body.dbc meta.parameters.dbc
