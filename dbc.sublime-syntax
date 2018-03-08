@@ -139,8 +139,6 @@ contexts:
           pop: true
     - include: nested
 
-
-
   file-includes:
     - match: '{{pre}}(?i)inc{{sp}}'
       scope: support.type.include.dbc
@@ -152,8 +150,6 @@ contexts:
           pop: true
         - match: ''
           set: eol-invalid
-
-
 
   constant-types:
     - match: (^{{valid_variables}})({{sp}}+((?i)(define|equ)\b))
@@ -305,8 +301,6 @@ contexts:
     - match: '\)'
       scope: punctuation.section.parentheses.end.dbc
       pop: true
-    - match: '{{sp}}*:$\n'
-      scope: punctuation.separator.dbc
     - match: '\b{{constants}}\b'
       scope: constant.language.dbc
     - match: '(<\=|>\=|\=|<|>|\!\=)'
@@ -314,6 +308,14 @@ contexts:
     - match: \b(?i)(or|and)\b
       scope: keyword.operator.word.dbc
     - include: parentheses-body
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      push: if-parentheses
+    - match: '{{sp}}*:$\n'
+      scope: punctuation.separator.dbc
+    - match: $\n
+      scope: invalid.illegal.dbc
+      pop: true
 
   parentheses-body:
     - match: (\+|\-|/|%|\||\^|~|!|\*)
@@ -323,9 +325,7 @@ contexts:
       scope: support.function.builtin.dbc
     - match: '\b({{valid_variables}})\b'
       scope: variable.other.dbc
-    - match: '\('
-      scope: punctuation.section.parentheses.begin.dbc
-      push: if-parentheses
+
 
   if-keyword-body:
     - meta_scope: meta.control.if.dbc
@@ -355,7 +355,7 @@ contexts:
       scope: keyword.control.dbc
       push:
         - meta_scope: meta.control.loop.dbc
-        - match: '{{pre}}(?i)repeat'
+        - match: '{{pre}}(?i)repeat\b'
           scope: keyword.control.dbc
           pop: true
         - include: interloop-keywords
@@ -515,18 +515,34 @@ contexts:
   eol-parameters:
     - meta_scope: meta.parameters.dbc
     - include: parameters
-    - match: $\n
+    - match: \n
       pop: true
 
   parameters:
     - meta_scope: meta.parameters.dbc
     - include: expression-seperators
-    - match: '{{numbers}}'
+    - match: '\b{{numbers}}\b'
       scope: constant.numeric.dbc
-    - match: '~{{valid_functions}}'
+    - match: '\b~{{valid_functions}}\b'
       scope: variable.function.dbc
-    - match: '{{valid_variables}}'
+    - match: '\b{{valid_variables}}\b'
       scope: variable.other.dbc
+    - match: \(
+      push: parameter-parens
+
+
+  parameter-parens:
+    - meta_scope: meta.parameters.parentheses.dbc
+    - match: \)
+      pop: true
+    - include: parentheses-body
+    - match: \(
+      push: parameter-parens
+    - match: '{{sp}}*:$\n'
+      scope: punctuation.separator.dbc
+    - match: $\n
+      scope: invalid.illegal.dbc
+      pop: true
 
   function-keywords:
     - include: call-keywords

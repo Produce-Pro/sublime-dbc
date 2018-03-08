@@ -15,7 +15,6 @@ Copy to the files to the DBC directory
 
 ## TODO ##
 
-- parenthesis to combine variables
 - verb calls
 - keyword:
 	add
