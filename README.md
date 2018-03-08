@@ -1,21 +1,19 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
 ### What is this repository for? ###
 
-* DBC language syntax highlighting and settings for sublime
+* DBC language syntax highlighting and settings for Sublime 3.0
 * Version 0.2
 
 ### How do I get set up? ###
 
-Create a DBC directory in sublime packages directory (Preferences -> Browse Packages)
-Copy to the files to the DBC directory
+Create a dbc directory in sublime packages directory (Preferences -> Browse Packages)
+Copy to the files to the dbc directory
 
 
 ## TODO ##
 
-- primary keywords:
+- Primary keywords:
 	add
 	close, closeall
 	debug
@@ -39,7 +37,7 @@ Copy to the files to the DBC directory
 	unload
 	wait
 
-- file keywords
+- File keywords
 	deletek
 	open
 	read
@@ -53,8 +51,16 @@ Copy to the files to the DBC directory
 	readkslk
 	readlk
 	write
-- trap functions
-- remaining keyword:
+
+- Indentation defaults
+- Trap functions
+
+- Find a way to override goto-definition word seperators
+	Will likely need to create a macro/custom command to replace F12 so that it selects the entire word instead of seperating it by '.'
+	https://forum.sublimetext.com/t/problem-with-goto-defintion/26228/6
+
+
+- Remaining keywords:
 	beep
 	bump
 	change

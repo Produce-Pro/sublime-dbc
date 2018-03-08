@@ -22,7 +22,7 @@ variables:
   alter_paren_keywords: '(?i)sqznum|form|char|squeeze|trim|size|length|chop'
   system_functions1: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest'
   system_functions2: '(?i)clear|clearadr|set|reset'
-  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace'
+  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel'
   system_functions4: '(?i)move|fill|pack|unpack|packlen|type'
 
 contexts:
