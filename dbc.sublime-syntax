@@ -15,7 +15,7 @@ variables:
   pre: ^{{sp}}+
   numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
   operands: '((?i)by|to|of|from|using|with|in|into)'
-  constants: '(?i)not|eos|over|less|zero'
+  constants: '(?i)not|eos|over|equal|less|zero'
   valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$@]*'
   assignment_keywords: '(?i)move|to|with'
@@ -117,10 +117,10 @@ contexts:
       scope: storage.modifier.dbc
 
   compiler-directive:
-    - match: '[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)\b'
+    - match: '{{pre}}[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)\b'
       scope: storage.modifier.dbc
       push: compiler-directive-parameters
-    - match: '[\#\%]\w*\b'
+    - match: '{{pre}}[\#\%]\w*\b'
       scope: invalid.illegal.dbc
 
 
@@ -238,15 +238,13 @@ contexts:
           - include: standard-types
 
   statements:
-    - match: '{{pre}}'
-      push:
-        # - meta_scope: meta.generic.statement.dbc
-        - include: compiler-directive
-        - include: control-keywords
-        - include: function-keywords
-        - include: support-functions
-        - match: $\n
-          pop: true
+    - include: compiler-directive
+    - include: if-keyword
+    - include: loop-keyword
+    - include: for-keyword
+    - include: switch-keyword
+    - include: function-keywords
+    - include: support-functions
 
   eol-comments:
     - match: ''
@@ -262,13 +260,6 @@ contexts:
         - match: $\n
           pop: true
 
-  control-keywords:
-    - include: if-keyword
-    - include: switch-keyword
-    - include: loop-keyword
-    - include: for-keyword
-
-
 
   invalid-keywords:
     - match: '{{pre}}(?i)(continue|break|repeat|endif|endswitch|endroutine)'
@@ -277,7 +268,7 @@ contexts:
       scope: invalid.illegal.dbc
 
   if-keyword:
-    - match: (?i)if\b
+    - match: '{{pre}}+(?i)if\b'
       scope: keyword.control.dbc
       push: if-keyword-parameters
 
@@ -339,7 +330,7 @@ contexts:
       pop: true
 
   loop-keyword:
-    - match: (?i)loop\b
+    - match: '{{pre}}(?i)loop\b'
       scope: keyword.control.dbc
       push:
         - meta_scope: meta.control.loop.dbc
@@ -359,7 +350,7 @@ contexts:
           pop: true
 
   for-keyword:
-    - match: (?i)for{{sp}}+
+    - match: '{{pre}}(?i)for{{sp}}+'
       scope: keyword.control.dbc
       push: for-keyword1
 
@@ -418,9 +409,9 @@ contexts:
     - include: eol-invalid
 
   switch-keyword:
-    - match: (?i)switch\b
+    - match: '{{pre}}(?i)switch\b'
       scope: keyword.control.dbc
-      set: switch-keyword1
+      push: switch-keyword1
 
   switch-keyword1:
     - match: '{{sp}}*{{valid_variables}}'
@@ -518,29 +509,29 @@ contexts:
 
   function-keywords:
     - include: call-keywords
-    - match: (?i)return\b
+    - match: '{{pre}}(?i)return|noreturn\b'
       scope: keyword.control.flow.dbc
       push:
         - match: "{{sp}}+"
           set: eol-if-keyword
         - match: ''
           pop: true
-    - match: (?i)(goto)(\s{{valid_functions}})
+    - match: '{{pre}}(?i)(goto)(\s{{valid_functions}})'
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.call.dbc
-      set:
+      push:
         - match: '{{sp}}'
           set: eol-if-keyword
         - match: '$\n'
           pop: true
 
   call-keywords:
-    - match: (?i)(call)(\s{{valid_functions}})
+    - match: '{{pre}}(?i)(call)(\s{{valid_functions}})'
       captures:
         1: support.function.builtin.dbc
         2: variable.function.call.dbc
-      set:
+      push:
       - meta_scope: meta.function-call.dbc
       - match: $\n
         pop: true
@@ -555,25 +546,25 @@ contexts:
 
   support-functions:
     # function x,y,z
-    - match: (?i)(clear|clearadr)\b
+    - match: '{{pre}}(?i)(clear|clearadr)\b'
       scope: support.function.builtin.dbc
-      set:
+      push:
         - include: parameters
         - match: $\n
           pop: true
     # function x to y
-    - match: (?i)(moveadr){{sp}}+
+    - match: '{{pre}}(?i)(moveadr){{sp}}+'
       scope: support.function.builtin.dbc
-      set:
+      push:
         - include: parameters
         - include: operand-seperators
         - match: $\n
           pop: true
     # function x to y [giving z]
     # function x to y,z,...
-    - match: (?i)(move|fill|chop|trim|squeeze)\b
+    - match: '{{pre}}(?i)(move|fill|chop|trim|squeeze)\b'
       scope: support.function.builtin.dbc
-      set:
+      push:
         - include: parameters
         - include: operand-seperators
         - match: $\n
