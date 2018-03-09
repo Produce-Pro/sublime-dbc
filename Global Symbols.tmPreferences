@@ -2,7 +2,7 @@
 <plist version="1.0">
 <dict>
 	<key>scope</key>
-	<string>source.dbc entity.name.function, source.dbc entity.name.label, source.dbc entity.name.type</string>
+	<string>source.dbc entity.name.function, source.dbc entity.name.type</string>
 	<key>settings</key>
 	<dict>
 		<key>showInSymbolList</key>
