@@ -49,7 +49,7 @@ TEST_EXTERNAL EXTERNAL
 FORMATTED_CHAR CHAR 30, INITIAL "YES"
 UPDATE_CHAR EXTERNAL
 
-SIZEX FORM 5.2
+SIZE.X FORM 5.2
 
 FORMATVERB VERB ARRAY=ANY,TYPE=CVAR,SIZE=NVAR,SIZE2=NVAR
 . <- meta.function.dbc entity.name.function.verb.dbc - meta.function.parameters.dbc
@@ -110,9 +110,9 @@ BOOL_TEST      FORM 1[3], 1,0,1
      MOVE 1 TO Y
      PACK Z WITH 2
 
-     CLEAR SIZEX,SIZEX2,TYPE.FORM,TYPE
-.    ^^^^^ support.function.builtin.dbc
-.                                  ^^^ variable.other.dbc
+     CLEAR SIZE.X,SIZE.X2,TYPE.FORM,TYPE
+.    ^ support.function.builtin.dbc
+.                                   ^ variable.other.dbc
      FILL " " IN TYPE
 .    ^^^ support.function.builtin.dbc
 .                 ^^^ variable.other.dbc
@@ -132,10 +132,10 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .                                  ^ variable.other.dbc
                CASE "TYPE"
                     MOVEADR VAR TO TYPE@
-               CASE "SIZEX"
-                    MOVEADR VAR TO SIZEX@
-               CASE "SIZEX2"
-                    MOVEADR VAR TO SIZEX2@
+               CASE "SIZE.X"
+                    MOVEADR VAR TO SIZE.X@
+               CASE "SIZE.X2"
+                    MOVEADR VAR TO SIZE.X2@
           ENDSWITCH
 .          ^ meta.control.loop.dbc meta.control.switch.dbc keyword.control.dbc
 
@@ -185,29 +185,29 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .     ^ meta.function.dbc keyword.control.flow.dbc
 .           ^ meta.control.if.dbc keyword.control.dbc
 
-     FILL " " IN SIZEX,CHAR2,CHAR4
+     FILL " " IN SIZE.X,CHAR2,CHAR4
 .      ^ support.function.builtin.dbc
 .              ^ support.type.dbc
 .                   ^ variable.other.dbc
 .                              ^ variable.other.dbc
-     TESTADR SIZEX@
+     TESTADR SIZE.X@
      IF NOT OVER
 .     ^ meta.function.dbc keyword.control.dbc
 .         ^ constant.language.dbc
-          CHOP SIZEX TO SIZEX
-          MOVE (CHOP (SQUEEZE SIZEX)) TO SIZEX@
+          CHOP SIZE.X TO SIZE.X
+          MOVE (CHOP (SQUEEZE SIZE.X)) TO SIZE.X@
      ELSE IF OVER
 .      ^  meta.control.if.dbc keyword.control.dbc
-          MOVE SIZEX@ TO SIZEX
-     ELSE IF (SIZEX ! 4.0 > 8 OR SIZEX != 0 OR SQUEEZE CHAR SIZEX)
+          MOVE SIZE.X@ TO SIZE.X
+     ELSE IF (SIZE.X ! 4.0 > 8 OR SIZE.X != 0 OR SQUEEZE CHAR SIZE.X)
 .      ^  meta.control.if.dbc keyword.control.dbc
-.            ^ meta.parens.if.dbc punctuation.section.parens.begin.dbc
-.                   ^ keyword.operator.arithmetic.dbc
-.                                            ^ keyword.operator.word.dbc
-.                                               ^ support.function.builtin.dbc
+.            ^ meta.parens.if.dbc punctuation.section.parentheses.begin.dbc
+.                    ^ keyword.operator.arithmetic.dbc
+.                                             ^ keyword.operator.word.dbc
+.                                                ^ support.function.builtin.dbc
 .                                                              ^ variable.other.dbc
-          CLEAR SIZEX
-     ELSE IF (SIZE CHOP CHAR SIZEX)
+          CLEAR SIZE.X
+     ELSE IF (SIZE CHOP CHAR SIZE.X)
           GOTO TEST.SECONDROUTINE IF EOS
      ENDIF
 .      ^  meta.control.if.dbc keyword.control.dbc
@@ -247,7 +247,7 @@ TEST.SECONDROUTINE ROUTINE
 
      CALL TEST WITH (CHOP (SQUEEZE CHAR1) AND :
 
-. <- meta.parameters.parens.dbc invalid.illegal.dbc
+. <- meta.parens.arguments.dbc invalid.illegal.dbc
 
      CONTINUE
 .     ^ invalid.illegal.dbc
