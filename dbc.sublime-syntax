@@ -23,8 +23,8 @@ variables:
   alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
   system_functions1: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest'
   system_functions2: '(?i)clear|clearadr|set|reset'
-  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel'
-  system_functions4: '(?i)move|fill|pack|unpack|packlen|type'
+  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan'
+  system_functions4: '(?i)move|fill|pack|unpack|packlen|type|append'
 
 contexts:
 
@@ -265,7 +265,7 @@ contexts:
           pop: true
 
   label-types:
-    - match: (^{{valid_variables}})((?i){{sp}}+(external|label))
+    - match: (^{{valid_variables}})((?i){{sp}}+(external|label)\b)
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
@@ -277,7 +277,7 @@ contexts:
         - include: eol-comments
 
   list-types:
-    - match: (^{{valid_variables}})((?i){{sp}}+((?i)list))
+    - match: (^{{valid_variables}})((?i){{sp}}+((?i)list)\b)
       captures:
         1: entity.name.list.dbc
         2: storage.type.dbc
@@ -289,7 +289,7 @@ contexts:
         - match: '$\n'
           set:
           - meta_scope: meta.list.dbc
-          - match: '^{{sp}}+(?i)(listend)'
+          - match: '^{{sp}}+(?i)(listend\b)'
             scope: storage.type.dbc
             pop: true
           - include: standard-types
@@ -322,13 +322,13 @@ contexts:
 
 
   invalid-keywords:
-    - match: '{{pre}}(?i)(continue|break|repeat|endif|endswitch|endroutine)'
+    - match: '{{pre}}(?i)(continue|break|repeat|endif|endswitch|endroutine){{end}}'
       scope: invalid.illegal.dbc
     - match: (?i)[\%\#]endif
       scope: invalid.illegal.dbc
 
   if-keyword:
-    - match: '{{pre}}+(?i)if'
+    - match: '{{pre}}+(?i)if{{end}}'
       scope: keyword.control.dbc
       push: if-keyword-arguments
 
@@ -377,18 +377,18 @@ contexts:
 
   if-keyword-body:
     - meta_scope: meta.control.if.dbc
-    - match: '{{pre}}(?i)endif'
+    - match: '{{pre}}(?i)endif{{end}}'
       scope: keyword.control.dbc
       pop: true
-    - match: '{{pre}}(?i)else if'
+    - match: '{{pre}}(?i)else if{{end}}'
       scope: keyword.control.dbc
       set: if-keyword-arguments
-    - match: '{{pre}}(?i)else'
+    - match: '{{pre}}(?i)else{{end}}'
       scope: keyword.control.dbc
     - include: nested
 
   eol-if-keyword:
-    - match: (?i)if
+    - match: (?i)if{{end}}
       scope: keyword.control.dbc
       push:
         - meta_scope: meta.control.if.dbc
@@ -399,18 +399,18 @@ contexts:
       pop: true
 
   loop-keyword:
-    - match: '{{pre}}(?i)loop'
+    - match: '{{pre}}(?i)loop{{end}}'
       scope: keyword.control.dbc
       push:
         - meta_scope: meta.control.loop.dbc
-        - match: '{{pre}}(?i)repeat'
+        - match: '{{pre}}(?i)repeat{{end}}'
           scope: keyword.control.dbc
           pop: true
         - include: interloop-keywords
         - include: nested
 
   interloop-keywords:
-    - match: '{{pre}}(?i)(continue|break|until)'
+    - match: '{{pre}}(?i)(continue|break|until){{end}}'
       scope: keyword.control.dbc
       push:
         - match: "{{sp}}+"
@@ -495,7 +495,7 @@ contexts:
     - match: \n
       set:
         - meta_scope: meta.control.for.dbc
-        - match: '{{pre}}(?i)repeat'
+        - match: '{{pre}}(?i)repeat{{end}}'
           scope: keyword.control.dbc
           pop: true
         - include: interloop-keywords
@@ -503,7 +503,7 @@ contexts:
     - include: eol-invalid
 
   switch-keyword:
-    - match: '{{pre}}(?i)switch'
+    - match: '{{pre}}(?i)switch{{end}}'
       scope: keyword.control.dbc
       push: switch-keyword1
 
@@ -521,7 +521,7 @@ contexts:
 
   switch-keyword-body:
     - meta_scope: meta.control.switch.dbc
-    - match: '{{pre}}(?i)endswitch'
+    - match: '{{pre}}(?i)endswitch{{end}}'
       scope: keyword.control.dbc
       pop: true
     - match: '{{pre}}(?i)case'
@@ -613,7 +613,7 @@ contexts:
 
   function-keywords:
     - include: call-keywords
-    - match: '{{pre}}((?i)return|noreturn)'
+    - match: '{{pre}}((?i)(return|noreturn){{end}})'
       captures:
         1: keyword.control.flow.dbc
       push:
@@ -622,7 +622,7 @@ contexts:
           set: eol-if-keyword
         - match: ''
           pop: true
-    - match: '{{pre}}(?i)(goto)(\s{{valid_functions}})'
+    - match: '{{pre}}(?i)(goto)({{sp}}+{{valid_functions}})'
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.dbc
@@ -634,7 +634,7 @@ contexts:
           pop: true
 
   call-keywords:
-    - match: '{{pre}}(?i)(call)(\s{{valid_functions}})'
+    - match: '{{pre}}(?i)(call)({{sp}}+{{valid_functions}})'
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.dbc
@@ -652,7 +652,7 @@ contexts:
       - match: ''
         pop: true
 
-    - match: '{{pre}}((?i)branch|perform)'
+    - match: '{{pre}}((?i)(branch|perform){{end}})'
       captures:
         1: keyword.control.flow.dbc
       push:
@@ -669,7 +669,7 @@ contexts:
               pop: true
 
   support-functions:
-    - match: '{{pre}}((?i)setflag)'
+    - match: '{{pre}}((?i)setflag{{end}})'
       captures:
         1: support.function.builtin.dbc
       push:
@@ -678,7 +678,7 @@ contexts:
         - match: $\n
           pop: true
 
-    - match: '{{pre}}((?i)load|store)'
+    - match: '{{pre}}((?i)(load|store){{end}})'
       captures:
         1: support.function.builtin.dbc
       push:
@@ -693,7 +693,7 @@ contexts:
             - match: $\n
               pop: true
 
-    - match: '{{pre}}((?i)display|print)'
+    - match: '{{pre}}((?i)(display|print){{end}})'
       captures:
         1: support.function.builtin.dbc
       push:

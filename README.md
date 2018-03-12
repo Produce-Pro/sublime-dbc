@@ -13,6 +13,8 @@ Copy to the files to the dbc directory
 
 ## TODO ##
 
+- fix invalid continue/endif etc
+
 - Primary keywords:
 	add
 	close, closeall
