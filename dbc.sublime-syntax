@@ -39,6 +39,7 @@ contexts:
     - include: label-definition
     - include: variable-definitions
     - include: invalid-keywords
+    - include: debug
     - include: statements
 
   # Nested scope, interloop and others are valid
@@ -49,6 +50,7 @@ contexts:
     - include: label-definition
     - include: variable-definitions
     - include: interloop-keywords
+    - include: debug
     - include: statements
 
   line-comments:
@@ -326,6 +328,11 @@ contexts:
       scope: invalid.illegal.dbc
     - match: (?i)[\%\#]endif
       scope: invalid.illegal.dbc
+
+  debug:
+    - match: '{{pre}}(?i)(debug{{end}})'
+      captures:
+        1: invalid.illegal.dbc
 
   if-keyword:
     - match: '{{pre}}+(?i)if{{end}}'
