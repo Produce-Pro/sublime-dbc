@@ -247,10 +247,9 @@ TEST.SECONDROUTINE ROUTINE
 
      CALL TEST WITH (CHOP (SQUEEZE CHAR1) AND :
 
-. <- meta.parens.arguments.dbc invalid.illegal.dbc
-
      CONTINUE
-.     ^ invalid.illegal.dbc
+.            ^ invalid.illegal.dbc
+
      ENDROUTINE
 .     ^ invalid.illegal.dbc
      #INFALID

@@ -23,7 +23,7 @@ variables:
   alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
   system_functions1: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest'
   system_functions2: '(?i)clear|clearadr|set|reset'
-  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan'
+  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan|rep'
   system_functions4: '(?i)move|fill|pack|unpack|packlen|type|append'
 
 contexts:
@@ -57,7 +57,7 @@ contexts:
       scope: punctuation.definition.comment.dbc
       push:
         - meta_scope: comment.line.dbc
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
   strings:
@@ -70,7 +70,7 @@ contexts:
         - match: '"'
           scope: punctuation.definition.string.end.dbc
           pop: true
-        - match: $\n
+        - match: (?<!^)$\n
           scope: invalid.illegal.dbc
           pop: true
 
@@ -85,14 +85,14 @@ contexts:
         2: storage.type.verb.dbc
       push:
           - meta_scope: meta.function.dbc
-          - match: $\n
+          - match: (?<!^)$\n
             pop: true
           - match: ''
             set: verb-definition-parameters
 
   verb-definition-parameters:
     - meta_scope: meta.function.parameters.dbc
-    - match: $\n
+    - match: (?<!^)$\n
       pop: true
     - include: expression-seperators
     - match: ([\#\=])\b((?i)(array|afile|any|carray|carray1|carray2|carray3|cnvar|cnvarlit|comfile|cvar|cvarlit|device|file|ifile|image|list|label|nvar|nvarlit|varlit)\b)
@@ -112,7 +112,7 @@ contexts:
         - routine-definition-parameters
 
   routine-definition-parameters:
-    - match: $\n
+    - match: (?<!^)$\n
       pop: true
     - match: '{{sp}}'
       set:
@@ -120,7 +120,7 @@ contexts:
       - match: ({{valid_variables}}|~{{valid_functions}})
         scope: variable.parameter.dbc
       - include: expression-seperators
-      - match: '$\n'
+      - match: '(?<!^)$\n'
         pop: true
 
 
@@ -157,7 +157,7 @@ contexts:
 
   compiler-directive-args:
     - include: arguments
-    - match: $\n
+    - match: (?<!^)$\n
       set: compiler-directive-body
 
   compiler-directive-body:
@@ -179,7 +179,7 @@ contexts:
           captures:
             1: string.unquoted
           pop: true
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           pop: true
 
   chain-to:
@@ -191,7 +191,7 @@ contexts:
           captures:
             1: string.unquoted
           pop: true
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           pop: true
 
   constant-types:
@@ -204,7 +204,7 @@ contexts:
         - meta_scope: meta.type.constant.dbc
         - match: '{{sp}}{{numbers}}'
           scope: constant.numeric.dbc
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           pop: true
         - include: eol-comments
 
@@ -232,7 +232,7 @@ contexts:
               scope: storage.modifier.dbc
               set: eol-arguments
             - include: eol-comments
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
   numeric-types:
@@ -261,7 +261,7 @@ contexts:
                 - include: eol-arguments
 
             - include: eol-comments
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
   label-types:
@@ -270,7 +270,7 @@ contexts:
         1: entity.name.function.dbc
         2: storage.type.dbc
       push:
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           pop: true
         - match: \s\@
           scope: storage.modifier.dbc
@@ -286,7 +286,7 @@ contexts:
         - match: \s\@
           scope: storage.modifier.dbc
           pop: true
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           set:
           - meta_scope: meta.list.dbc
           - match: '^{{sp}}+(?i)(listend\b)'
@@ -310,14 +310,14 @@ contexts:
     - match: ''
       set:
         - meta_scope: comment.line.dbc
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
   eol-invalid:
     - match: ''
       set:
         - meta_scope: invalid.illegal.dbc
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
 
@@ -334,7 +334,7 @@ contexts:
 
   if-keyword-arguments:
     - include: if-arguments
-    - match: $\n
+    - match: (?<!^)$\n
       set: if-keyword-body
 
   if-arguments:
@@ -361,7 +361,7 @@ contexts:
       push: if-parentheses
     - match: '{{sp}}*:$\n'
       scope: punctuation.separator.dbc
-    - match: $\n
+    - match: (?<!^)$\n
       scope: invalid.illegal.dbc
       pop: true
 
@@ -393,7 +393,7 @@ contexts:
       push:
         - meta_scope: meta.control.if.dbc
         - include: if-arguments
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
     - match: ''
       pop: true
@@ -541,7 +541,7 @@ contexts:
       scope: variable.function.dbc
     - match: '{{valid_variables}}'
       scope: variable.other.dbc
-    - match: $\n
+    - match: (?<!^)$\n
       pop: true
 
 
@@ -575,7 +575,7 @@ contexts:
 
   eol-arguments:
     - include: arguments
-    - match: \n
+    - match: (?<!^)$\n
       pop: true
 
   arguments:
@@ -607,7 +607,7 @@ contexts:
       push: arg-parens
     - match: '{{sp}}*:$\n'
       scope: punctuation.separator.dbc
-    - match: $\n
+    - match: (?<!^)$\n
       scope: invalid.illegal.dbc
       pop: true
 
@@ -630,7 +630,7 @@ contexts:
         - meta_scope: meta.function-call.dbc
         - match: '{{sp}}'
           set: eol-if-keyword
-        - match: '$\n'
+        - match: '(?<!^)$\n'
           pop: true
 
   call-keywords:
@@ -640,7 +640,7 @@ contexts:
         2: variable.function.dbc
       push:
       - meta_scope: meta.function-call.dbc
-      - match: $\n
+      - match: (?<!^)$\n
         pop: true
       - match: '{{sp}}+(?i)with{{sp}}+'
         scope: support.type.dbc
@@ -665,7 +665,7 @@ contexts:
             - match: '{{valid_functions}}'
               scope: variable.function.dbc
             - include: operand-seperators
-            - match: $\n
+            - match: (?<!^)$\n
               pop: true
 
   support-functions:
@@ -675,7 +675,7 @@ contexts:
       push:
         - match: '{{sp}}+{{constants}}'
           scope: constant.language.dbc
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
     - match: '{{pre}}((?i)(load|store){{end}})'
@@ -690,7 +690,7 @@ contexts:
             - match: '{{valid_variables}}'
               scope: variable.other.dbc
             - include: operand-seperators
-            - match: $\n
+            - match: (?<!^)$\n
               pop: true
 
     - match: '{{pre}}((?i)(display|print){{end}})'
@@ -698,7 +698,7 @@ contexts:
         1: support.function.builtin.dbc
       push:
         - include: arguments
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
     # function x
@@ -710,7 +710,7 @@ contexts:
           scope: constant.numeric.dbc
         - match: '{{valid_variables}}'
           scope: variable.other.dbc
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
 
@@ -720,7 +720,7 @@ contexts:
         1: support.function.builtin.dbc
       push:
         - include: arguments
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
     # function x to y
@@ -733,7 +733,7 @@ contexts:
         - match: '{{valid_variables}}'
           scope: variable.other.dbc
         - include: operand-seperators
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
     # function x to y,z,...
@@ -743,7 +743,7 @@ contexts:
       push:
         - include: arguments
         - include: operand-seperators
-        - match: $\n
+        - match: (?<!^)$\n
           pop: true
 
     # function x to y [giving z]
