@@ -211,7 +211,7 @@ contexts:
         - include: eol-comments
 
   character-types:
-    - match: (^{{valid_variables}})({{sp}}+((?i)char|dim|init))
+    - match: (^{{valid_variables}})({{sp}}+((?i)char|dim|init|gchar))
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
@@ -238,7 +238,7 @@ contexts:
           pop: true
 
   numeric-types:
-    - match: (^{{valid_variables}})({{sp}}+((?i)form|num|int|float)\b)
+    - match: (^{{valid_variables}})({{sp}}+((?i)form|num|int|float|gform|gnum)\b)
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc

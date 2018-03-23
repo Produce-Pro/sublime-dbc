@@ -14,6 +14,7 @@ Copy to the files to the dbc directory
 ## TODO ##
 
 - fix invalid continue/endif etc
+- handle constants used in type defs
 
 - Primary keywords:
 	add
