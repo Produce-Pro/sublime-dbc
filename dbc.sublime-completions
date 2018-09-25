@@ -2,17 +2,18 @@
         "scope": "source.dbc",
         "completions": [
             // Control
-            { "trigger": "GOTO", "contents": "GOTO ${1:LABEL}" },
-            { "trigger": "CALL", "contents": "CALL ${1:LABEL}" },
-            { "trigger": "IF", "contents": "IF ($1) $2ENDIF" },
-            { "trigger": "LOOP", "contents": "LOOP $1REPEAT" },
-            { "trigger": "FOR", "contents": "FOR ${1:VAR} FROM ${2:NUM/VAR} TO ${4:NUM/VAR} $4REPEAT" },
+            { "trigger": "GOTO\tGOTO <ROUTINE>", "contents": "GOTO ${1:LABEL}" },
+            { "trigger": "CALL\tCALL <ROUTINE>", "contents": "CALL ${1:LABEL}" },
+            { "trigger": "IF\tIF", "contents": "IF ($1)\nENDIF" },
+            { "trigger": "IF\tIF ELSE", "contents": "IF ($1)\nELSE\nENDIF" },
+            { "trigger": "SWITCH\tSWITCH", "contents": "SWITCH ${1:VAR}\nCASE ${2:VALUE}\nENDSWITCH" },
+            { "trigger": "LOOP\tLOOP", "contents": "LOOP $1REPEAT" },
+            { "trigger": "FOR\tFOR LOOP", "contents": "FOR ${1:VAR} FROM ${2:NUM/VAR} TO ${4:NUM/VAR}\nREPEAT" },
 
 
             // Functions
-            { "trigger": "MOVE", "contents": "MOVE ${1:#VAR} TO ${2:#VAR}" },
-            { "trigger": "PACK", "contents": "PACK ${1:#VAR} WITH ${2:#VAR}, ${3:#VAR}" }
-
+            { "trigger": "MOVE\tMOVE", "contents": "MOVE ${1:#VAR} TO ${2:#VAR}" },
+            { "trigger": "PACK\tPACK", "contents": "PACK ${1:#VAR} WITH ${2:#VAR}" }
 
             // Variables
       ]
