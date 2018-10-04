@@ -155,8 +155,9 @@ contexts:
       push:
         - compiler-directive-body
         - compiler-directive-arguments
-    - match: '{{pre}}[\#\%]\w*'
-      scope: invalid.illegal.dbc
+    - match: '{{pre}}([\#\%]\w*)'
+      captures:
+        1: invalid.illegal.dbcc
 
 
   compiler-directive-arguments:
@@ -164,16 +165,18 @@ contexts:
       captures:
         1: variable.other.dbc
     - match: (?<!^)$\n
-      set: compiler-directive-body
+      pop: true
 
   compiler-directive-body:
     - meta_scope: meta.compiler-directive.dbc
-    - match: '{{pre}}(?i)[\#\%]((?i)(else|endif))'
+    - match: '{{pre}}(?i)[\#\%]((?i)(endif))'
       scope: storage.modifier.dbc
       set:
         - include: eol-comments
         - match: ''
           pop: true
+    - match: '{{pre}}(?i)[\#\%]((?i)(else))'
+      scope: storage.modifier.dbc
     - include: nested
 
   file-includes:
@@ -321,9 +324,11 @@ contexts:
 
   invalid-keywords:
     - match: '{{pre}}(?i)(continue|break|repeat|endif|endswitch|endroutine){{end}}'
-      scope: invalid.illegal.dbc
+      captures:
+        1: invalid.illegal.dbc
     - match: (?i)[\%\#]endif
-      scope: invalid.illegal.dbc
+      captures:
+        1: invalid.illegal.dbc
 
   debug:
     - match: '{{pre}}(?i)(debug{{end}})'
@@ -390,6 +395,7 @@ contexts:
       push: if-keyword-arguments
     - match: '{{pre}}(?i)else{{end}}'
       scope: keyword.control.dbc
+    - include: interloop-keywords
     - include: nested
 
   eol-if-keyword:
@@ -462,6 +468,7 @@ contexts:
       push: case-keyword-parameters
     - match: '{{pre}}(?i)default{{end}}'
       scope: keyword.control.switch.dbc
+    - include: interloop-keywords
     - include: nested
 
   case-keyword-parameters:

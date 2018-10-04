@@ -163,6 +163,10 @@ CHAR_ARRAY     CHAR 30[4], INITIAL "TEST",STUFF,"OUT",WELL
           REPEAT
 .         ^  meta.control.for.dbc keyword.control.for.dbc
 
+     #IFDEF POHDEF
+          CONTINUE
+     #ENDIF
+
      REPEAT
 .    ^  meta.control.loop.dbc keyword.control.loop.dbc - meta.control.for.dbc
 
@@ -240,8 +244,6 @@ TEST.SECONDROUTINE ROUTINE
 .     ^ meta.function.dbc meta.function.dbc storage.type.routine.end.dbc
      #ENDIF .IFDEF SOHDEF
 
-     ENDROUTINE
-.     ^ meta.function.dbc storage.type.routine.end.dbc - meta.compiler-directive
      IF (OVER
 
      ENDIF
@@ -257,6 +259,9 @@ TEST.SECONDROUTINE ROUTINE
 
      CONTINUE
 .           ^ invalid.illegal.dbc
+
+     ENDROUTINE
+.     ^ meta.function.dbc storage.type.routine.end.dbc - meta.compiler-directive
 
      ENDROUTINE
 .     ^ invalid.illegal.dbc
