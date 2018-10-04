@@ -21,6 +21,7 @@ TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 .        ^ punctuation.separator.dbc
 .          ^ variable.parameter.dbc
 
+VAR.MAX$ DEFINE 2
 VAR.MAX$ EQU 2
 . <- entity.name.constant
 .         ^ storage.modifier.dbc

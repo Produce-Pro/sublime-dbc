@@ -22,7 +22,7 @@ variables:
   valid_functions: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
   valid_variables: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
   alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
-  system_functions: '(?i)(retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest|add|print|display|moveadr|chop|trim|squeeze|replace|movelabel|scan|rep|move|fill|pack|unpack|packlen|type|append|clear|clearadr|set|reset|close|closeall|debug|divide|loadmod|movefptr|movelabel|movelength|movelptr|movelv|movesize|movevl|multiply|replace|rollout|scan|search|shutdown|stop|subtract|unload|wait|keywords|deletek|open|read|readgplk|readkg|readkglk|readkgp|readkp|readkplk|readks|readkslk|readlk|write)'
+  system_functions: '(?i)(add|append|beep|bump|change|charrest|charrestore|charsave|chop|clear|clearadr|clearendkey|clearlabel|clock|close|closeall|cmatch|cmove|comclr|comctl|comopen, comclose|compare|compareadr|comtst|comwait|console|count|debug|delete|deletek|destroy|disable|display|divide|draw|edit|empty|enable|endset|erase|execute|extend|filepi|fill|flagrest|flagrestore|flagsave|flusheof|format|fposit|get|getcolor|getcursor|getendkey|getglobal|getlabel|getmodules|getname|getobject|getpaperbins|getparm|getposition|getprinters|getwindow|hide|insert|keyin|keywords|lcmove|lenset|link|loadadr|loadlabel|loadmod|loadparm|make|makeglobal|makevar|match|mod|move|moveadr|movefptr|movelabel|movelabel|movelength|movelptr|movelv|movesize|movevl|multiply|nformat|noeject|open|pack|packlen|pause|ploadmod|popreturn|prepare|print|pushreturn|put|putfirst|query|read|readgplk|readkg|readkglk|readkgp|readkp|readkplk|readks|readkslk|readlk|recv|recvclr|release|rename|rep|replace|replace|reposit|reset|resetparm|retcount|rollout|rotate|scan|scan|scrnrest|scrnrestore|scrnsave|search|send|sendclr|set|setendkey|setlptr|setnull|sformat|show|shutdown|sound|splclose|splopen|splopt|sqlcode|sqlexec|sqlmsg|squeeze|staterest|staterestore|statesave|statesize|stop|storeadr|storelabel|subtract|tabpage|test|testadr|testlabel|traprest|traprestore|trim|type|unlink|unload|unlock|unpack|unpacklist|updatab|update|wait|weof|winrest|winrestore|winsave|winsize|write)'
 
 contexts:
 
@@ -155,7 +155,7 @@ contexts:
         - compiler-directive-arguments
     - match: '{{pre}}([\#\%]\w*)'
       captures:
-        1: invalid.illegal.dbcc
+        1: invalid.illegal.dbc
 
 
   compiler-directive-arguments:
@@ -202,79 +202,67 @@ contexts:
           pop: true
 
   constant-types:
-    - match: '^{{valid_variables}}({{sp}}+((?i)(define|equ)))'
+    - match: '^{{valid_variables}}({{sp}}+((?i)(define|equ)){{sp}}+)'
       captures:
         1: entity.name.constant.dbc
         2: storage.modifier.dbc
 
       push:
         - meta_scope: meta.type.constant.dbc
-        - match: '{{sp}}{{numbers}}'
-          scope: constant.numeric.dbc
+        - include: number-constants
         - match: '(?<!^)$\n'
           pop: true
         - include: eol-comments
 
   character-types:
-    - match: '^{{valid_variables}}({{sp}}+((?i)char|dim|init|gchar))'
+    - match: '^{{valid_variables}}({{sp}}+((?i)char|dim|init|gchar){{sp}}+)'
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
 
       push:
         - meta_scope: meta.type.dbc
-        - match: '{{sp}}{{numbers}}'
-          scope: constant.numeric.dbc
-          set: array-types
-        - match: '{{sp}}*\@'
-          scope: storage.modifier.dbc
-          set: array-types
+        - include: brackets
+        - include: type-details
         - match: (?<!^)$\n
           pop: true
+        - include: eol-comments
 
   numeric-types:
-    - match: '^{{valid_variables}}({{sp}}+((?i)form|num|int|float|gform|gnum)\b)'
+    - match: '^{{valid_variables}}({{sp}}+((?i)form|num|int|float|gform|gnum){{sp}}+)'
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
 
       push:
         - meta_scope: meta.type.dbc
-        - match: '{{sp}}{{numbers}}'
-          scope: constant.numeric.dbc
-          set: array-types
-        - match: '{{sp}}\@'
-          scope: storage.modifier.dbc
-          set: array-types
+        - include: brackets
+        - include: type-details
         - match: (?<!^)$\n
           pop: true
+        - include: eol-comments
 
   label-types:
-    - match: '^{{valid_functions}}((?i){{sp}}+(external|label)\b)'
+    - match: '^{{valid_functions}}((?i){{sp}}+(external|label){{sp}}*)'
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc
-        - match: '{{sp}}*\@'
-          scope: storage.modifier.dbc
-          set: array-types
+        - include: brackets
+        - include: address-types
         - match: '(?<!^)$\n'
           pop: true
-        - match: \s\@
-          scope: storage.modifier.dbc
         - include: eol-comments
 
   list-types:
-    - match: '^{{valid_variables}}((?i){{sp}}+((?i)list)\b)'
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)list){{sp}}*)'
       captures:
         1: entity.name.list.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.list.dbc
-        - match: '{{sp}}*\@'
-          scope: storage.modifier.dbc
-          pop: true
+        - include: address-types
         - match: '(?<!^)$\n'
           set:
           - meta_scope: meta.list.dbc
@@ -283,15 +271,32 @@ contexts:
             pop: true
           - include: standard-types
 
-  array-types:
-    - meta_scope: meta.type.array.dbc
-    - include: brackets
+  var-types:
+    - match: '^{{valid_functions}}((?i){{sp}}+(var){{sp}}+)'
+      captures:
+        1: entity.name.function.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - include: brackets
+        - include: type-details
+        - match: '(?<!^)$\n'
+          pop: true
+        - include: eol-comments
+
+  address-types:
+    - match: '\@'
+      scope: storage.modifier.dbc
+
+  type-details:
+    - meta_scope: meta.type.details.dbc
     - match: '{{operands}}({{sp}}*((?i)initial))?'
       captures:
         1: support.type.dbc
         3: storage.modifier.dbc
       set: eol-arguments
-    - include: eol-comments
+    - include: number-constants
+    - include: address-types
 
   statements:
     - include: compiler-directive
@@ -643,7 +648,7 @@ contexts:
 
 
   verb-call:
-    - match: '{{pre}}({{valid_functions}}){{sp_look}}'
+    - match: '{{pre}}({{valid_functions}}){{end}}'
       captures:
         1: variable.function.dbc
       push:
