@@ -103,14 +103,18 @@ BOOL_TEST      FORM 1[3], 1,0,1
 . <- meta.function.dbc meta.type.dbc entity.name.type.dbc
 .               ^ meta.function.dbc meta.type.dbc storage.type.dbc
 .                    ^ meta.function.dbc meta.brackets.dbc punctuation.section.brackets.begin.dbc
-.                       ^^ meta.function.dbc storage.modifier.dbc
+.                       ^ meta.function.dbc support.type.dbc
 .                         ^ meta.function.dbc constant.numeric.dbc
+CHAR_ARRAY     CHAR 30[4], INITIAL "TEST",STUFF,"OUT",WELL
+.                           ^^ meta.function.dbc storage.modifier.dbc
 
-     CALL SOMETHING
+     CALL SOMETHING,X,Y,Z
+.     ^source.dbc meta.function.dbc meta.function-call.dbc keyword.control.flow.dbc
+.             ^^ meta.function.dbc meta.function-call.dbc variable.function.dbc
      MOVE 1 TO Y
      PACK Z WITH 2
 
-     CLEAR SIZE.X,SIZE.X2,TYPE.FORM,TYPE
+     CLEAR SIZE.X,SIZE.X2,TYPE.FORM,TYPE,EQUAL
 .    ^ support.function.builtin.dbc
 .                                   ^ variable.other.dbc
      FILL " " IN TYPE
@@ -123,21 +127,22 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .         ^ meta.function.dbc  meta.control.loop.dbc keyword.control.dbc
 .                   ^ meta.control.loop.dbc meta.control.if.dbc constant.language.dbc
           SWITCH KEYWORD[1]
-.           ^ meta.control.loop.dbc keyword.control.dbc
+.           ^ meta.control.loop.dbc keyword.control.switch.dbc
 .                    ^ meta.function.dbc variable.other.dbc
                CASE "ARRAY" | "DONE"
-.               ^ meta.control.switch.dbc meta.control.case.dbc keyword.control.dbc
+.               ^ meta.control.switch.dbc meta.control.case.dbc keyword.control.switch.dbc
                     MOVEADR VAR TO VAR@
 .                    ^ meta.function.dbc meta.control.loop.dbc meta.control.switch.dbc support.function.builtin.dbc
 .                                  ^ variable.other.dbc
-               CASE "TYPE"
+               CASE "TYPE" OR "YES" OR Z
                     MOVEADR VAR TO TYPE@
                CASE "SIZE.X"
                     MOVEADR VAR TO SIZE.X@
                CASE "SIZE.X2"
                     MOVEADR VAR TO SIZE.X2@
+               DEFAULT
           ENDSWITCH
-.          ^ meta.control.loop.dbc meta.control.switch.dbc keyword.control.dbc
+.          ^ meta.control.loop.dbc meta.control.switch.dbc keyword.control.switch.dbc
 
           IF (CHOP CHAR2 = NULL AND NOT EOS)
                CLEAR FORM3
@@ -145,8 +150,8 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .               ^ meta.control.loop.dbc meta.control.if.dbc keyword.control.dbc
           ENDIF
 
-          FOR FORM2 FROM 1 TO (FORM1 - 1)
-.          ^  meta.control.loop.dbc keyword.control.dbc
+          FOR FORM2[1] FROM 1 TO (FORM1 - 1) USING -1
+.          ^  meta.control.loop.dbc keyword.control.for.dbc
                CONTINUE IF (CHOP (CHAR2 + SQUEEZE CHAR1) != NULL:
 .                        ^  meta.control.for.dbc meta.control.if.dbc keyword.control.dbc
 .                             ^  meta.parens.if.dbc support.function.builtin.dbc
@@ -156,13 +161,13 @@ BOOL_TEST      FORM 1[3], 1,0,1
 .                   ^ meta.parens.if.dbc keyword.operator.word.dbc
                CALL UPDATE_CHAR WITH "LOOP",CHAR2
           REPEAT
-.         ^  meta.control.for.dbc keyword.control.dbc
+.         ^  meta.control.for.dbc keyword.control.for.dbc
 
      REPEAT
-.    ^  meta.control.loop.dbc keyword.control.dbc - meta.control.for.dbc
+.    ^  meta.control.loop.dbc keyword.control.loop.dbc - meta.control.for.dbc
 
 
-     FORMATVERB IN="TEST",OUT=FORMATTED_CHAR:
+     FORMATVERB IN="TEST",OUT=FORMATTED_CHAR[1]:
 .     ^ meta.function-call.dbc variable.function.dbc
 .               ^ variable.parameter.dbc
 .                            ^ keyword.operator.assignment.dbc
@@ -227,6 +232,7 @@ TEST
      #IFDEF SOHDEF
 .      ^ storage.modifier.dbc
 .               ^ variable.other.dbc
+     #ELSE
 TEST.SECONDROUTINE ROUTINE
 . ^ meta.function.dbc entity.name.function.routine.dbc
 .                   ^ meta.compiler-directive.dbc storage.type.routine.start.dbc
@@ -237,18 +243,20 @@ TEST.SECONDROUTINE ROUTINE
      ENDROUTINE
 .     ^ meta.function.dbc storage.type.routine.end.dbc - meta.compiler-directive
      IF (OVER
-.            ^ meta.parens.if.dbc invalid.illegal.dbc
 
      ENDIF
 
      PACK CHAR4 WITH TEST,CHAR4,(CHOP CHAR2):
           (SQUEEZE TESTING),"UNFINISHED STRING
-.                                             ^ string.quoted.double.dbc invalid.illegal.dbc
 
-     CALL TEST WITH (CHOP (SQUEEZE CHAR1) AND :
+     CALL TEST WITH (CHOP (SQUEEZE CHAR1) AND
+     CALL SOMETHING,X,Y,Z
+.     ^source.dbc meta.function-call.dbc keyword.control.flow.dbc
+.             ^^ meta.function-call.dbc variable.function.dbc
+.                   ^ meta.function-call.dbc meta.argument.dbc variable.other.dbc
 
      CONTINUE
-.            ^ invalid.illegal.dbc
+.           ^ invalid.illegal.dbc
 
      ENDROUTINE
 .     ^ invalid.illegal.dbc

@@ -72,7 +72,7 @@ contexts:
         - match: '"'
           scope: punctuation.definition.string.end.dbc
           pop: true
-        - match: (?<!^)$\n
+        - match: (?<!^)(?=$\n)
           scope: invalid.illegal.dbc
           pop: true
 
@@ -81,7 +81,7 @@ contexts:
       scope: punctuation.definition.variable.dbc
 
   verb-definition:
-    - match: ^({{valid_functions}}){{sp}}+((?i)(verb))
+    - match: '^{{valid_functions}}{{sp}}+((?i)(verb))'
       captures:
         1: entity.name.function.verb.dbc
         2: storage.type.verb.dbc
@@ -101,17 +101,17 @@ contexts:
       captures:
         1: keyword.operator.assignment.dbc
         2: variable.language.dbc
-    - match: '({{valid_variables}})'
+    - match: '{{valid_variables}}'
       scope: variable.parameter.dbc
 
   routine-definition:
-    - match: ^{{valid_functions}}{{sp}}+((?i)(routine|lroutine))
+    - match: ^{{valid_functions}}{{sp}}+((?i)(routine|lroutine){{end}})
       captures:
         1: entity.name.function.routine.dbc
         2: storage.type.routine.start.dbc
       push:
-        - routine-definition-parameters
         - routine-definition-body
+        - routine-definition-parameters
 
   routine-definition-parameters:
     - match: (?<!^)$\n
@@ -150,21 +150,25 @@ contexts:
 
   compiler-directive:
     - meta_scope: meta.preprocessor.dbc
-    - match: '{{pre}}[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if)'
+    - match: '{{pre}}[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if){{sp_look}}'
       scope: storage.modifier.dbc
-      push: compiler-directive-args
+      push:
+        - compiler-directive-body
+        - compiler-directive-arguments
     - match: '{{pre}}[\#\%]\w*'
       scope: invalid.illegal.dbc
 
 
-  compiler-directive-args:
-    - include: argument
+  compiler-directive-arguments:
+    - match: '{{sp}}*{{valid_variables}}'
+      captures:
+        1: variable.other.dbc
     - match: (?<!^)$\n
       set: compiler-directive-body
 
   compiler-directive-body:
     - meta_scope: meta.compiler-directive.dbc
-    - match: '{{pre}}(?i)[\#\%](else|endif)'
+    - match: '{{pre}}(?i)[\#\%]((?i)(else|endif))'
       scope: storage.modifier.dbc
       set:
         - include: eol-comments
@@ -220,20 +224,10 @@ contexts:
         - meta_scope: meta.type.dbc
         - match: '{{sp}}{{numbers}}'
           scope: constant.numeric.dbc
-          set:
-            - include: brackets
-            - match: ', (?i)initial'
-              scope: storage.modifier.dbc
-              set: eol-arguments
-            - include: eol-comments
-        - match: \s\@
+          set: array-types
+        - match: '{{sp}}*\@'
           scope: storage.modifier.dbc
-          set:
-            - include: brackets
-            - match: ', (?i)initial'
-              scope: storage.modifier.dbc
-              set: eol-arguments
-            - include: eol-comments
+          set: array-types
         - match: (?<!^)$\n
           pop: true
 
@@ -247,22 +241,10 @@ contexts:
         - meta_scope: meta.type.dbc
         - match: '{{sp}}{{numbers}}'
           scope: constant.numeric.dbc
-          set:
-            - include: brackets
-            - match: ', '
-              scope: storage.modifier.dbc
-              set: eol-arguments
-            - include: eol-comments
-        - match: \s\@
+          set: array-types
+        - match: '{{sp}}\@'
           scope: storage.modifier.dbc
-          set:
-            - include: brackets
-            - match: ', '
-              scope: storage.modifier.dbc
-              set:
-                - include: eol-arguments
-
-            - include: eol-comments
+          set: array-types
         - match: (?<!^)$\n
           pop: true
 
@@ -272,16 +254,10 @@ contexts:
         1: entity.name.function.dbc
         2: storage.type.dbc
       push:
-        - match: \s\@
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}*\@'
           scope: storage.modifier.dbc
-          set:
-            - include: brackets
-            - match: ', '
-              scope: storage.modifier.dbc
-              set:
-                - include: eol-arguments
-
-            - include: eol-comments
+          set: array-types
         - match: '(?<!^)$\n'
           pop: true
         - match: \s\@
@@ -295,7 +271,7 @@ contexts:
         2: storage.type.dbc
       push:
         - meta_scope: meta.list.dbc
-        - match: \s\@
+        - match: '{{sp}}*\@'
           scope: storage.modifier.dbc
           pop: true
         - match: '(?<!^)$\n'
@@ -305,6 +281,16 @@ contexts:
             scope: storage.type.dbc
             pop: true
           - include: standard-types
+
+  array-types:
+    - meta_scope: meta.type.array.dbc
+    - include: brackets
+    - match: '{{operands}}({{sp}}*((?i)initial))?'
+      captures:
+        1: support.type.dbc
+        3: storage.modifier.dbc
+      set: eol-arguments
+    - include: eol-comments
 
   statements:
     - include: compiler-directive
@@ -380,7 +366,7 @@ contexts:
       push: if-parentheses
     - match: '{{sp}}*:$\n'
       scope: punctuation.separator.dbc
-    - match: (?<!^)$\n
+    - match: (?<!^)(?=$\n)
       scope: invalid.illegal.dbc
       pop: true
 
@@ -421,7 +407,7 @@ contexts:
       push:
         - meta_scope: meta.control.loop.dbc
         - match: '{{pre}}(?i)repeat{{end}}'
-          scope: keyword.control.dbc
+          scope: keyword.control.loop.dbc
           pop: true
         - include: interloop-keywords
         - include: nested
@@ -449,51 +435,45 @@ contexts:
   for-keyword-body:
     - meta_scope: meta.control.for.dbc
     - match: '{{pre}}(?i)repeat{{end}}'
-      scope: keyword.control.dbc
+      scope: keyword.control.for.dbc
       pop: true
     - include: interloop-keywords
     - include: nested
 
 
   switch-keyword:
-    - match: '{{pre}}(?i)switch{{end}}'
-      scope: keyword.control.dbc
-      push: switch-keyword1
+    - match: '{{pre}}(?i)switch{{sp_look}}'
+      scope: keyword.control.switch.dbc
+      push:
+        - switch-keyword-body
+        - switch-keyword-args
 
-  switch-keyword1:
-    - match: '{{sp}}*{{valid_variables}}'
-      scope: variable.other.dbc
-      set: switch-keyword3
-    - include: eol-invalid
-
-  switch-keyword3:
-    - include: brackets
-    - match: '\n'
-      set: switch-keyword-body
-    - include: eol-invalid
+  switch-keyword-args:
+    - meta_scope: meta.control.switch.arguments.dbc
+    - include: eol-arguments
 
   switch-keyword-body:
     - meta_scope: meta.control.switch.dbc
     - match: '{{pre}}(?i)endswitch{{end}}'
-      scope: keyword.control.dbc
+      scope: keyword.control.switch.dbc
       pop: true
-    - match: '{{pre}}(?i)case'
-      scope: keyword.control.dbc
+    - match: '{{pre}}(?i)case{{end}}'
+      scope: keyword.control.switch.dbc
       push: case-keyword-parameters
-    - match: '{{pre}}(?i)default'
-      scope: keyword.control.dbc
+    - match: '{{pre}}(?i)default{{end}}'
+      scope: keyword.control.switch.dbc
     - include: nested
 
   case-keyword-parameters:
     - meta_scope: meta.control.case.dbc
-    - match: '(OR|\|)'
+    - match: '({{sp}}OR{{end}}|{{sp}}*\|)'
       scope: keyword.operator.arithmetic.c
-    - match: '{{numbers}}'
-      scope: constant.numeric.dbc
-    - match: '~{{valid_functions}}'
-      scope: variable.function.dbc
-    - match: '{{valid_variables}}'
-      scope: variable.other.dbc
+    - match: '{{sp}}'
+      push: argument
+    # - match: '~{{valid_functions}}'
+    #   scope: variable.function.dbc
+    # - match: '{{valid_variables}}'
+    #   scope: variable.other.dbc
     - match: (?<!^)$\n
       pop: true
 
@@ -519,7 +499,8 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.dbc
           pop: true
-        - include: argument
+        - match: ''
+          push: argument
 
   expression-seperators:
     - match: '{{sp}}*,{{sp}}*'
@@ -557,7 +538,7 @@ contexts:
   arg-parens:
     - match: \(
       scope: punctuation.section.parentheses.begin.dbc
-      push:
+      set:
         - meta_scope: meta.argument.parens.dbc
         - match: \)
           scope: punctuation.section.parentheses.end.dbc
@@ -566,7 +547,7 @@ contexts:
         - include: arg-parens
         - match: '{{sp}}*:$\n'
           scope: punctuation.separator.dbc
-        - match: (?<!^)$\n
+        - match: (?<!^)(?=$\n)
           scope: invalid.illegal.dbc
           pop: true
 
