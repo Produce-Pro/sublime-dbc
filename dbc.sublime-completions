@@ -8,12 +8,13 @@
             { "trigger": "IF\tIF ELSE", "contents": "IF ($1)\nELSE\nENDIF" },
             { "trigger": "SWITCH\tSWITCH", "contents": "SWITCH ${1:VAR}\nCASE ${2:VALUE}\nENDSWITCH" },
             { "trigger": "LOOP\tLOOP", "contents": "LOOP $1REPEAT" },
-            { "trigger": "FOR\tFOR LOOP", "contents": "FOR ${1:VAR} FROM ${2:NUM/VAR} TO ${4:NUM/VAR}\nREPEAT" },
+            { "trigger": "FOR\tFOR LOOP", "contents": "FOR ${1:VAR} FROM ${2:NUM_OR_VAR} TO ${4:NUM/VAR}\nREPEAT" },
 
 
             // Functions
-            { "trigger": "MOVE\tMOVE", "contents": "MOVE ${1:#VAR} TO ${2:#VAR}" },
-            { "trigger": "PACK\tPACK", "contents": "PACK ${1:#VAR} WITH ${2:#VAR}" }
+            { "trigger": "MOVE\tMOVE", "contents": "MOVE ${1:VAR} TO ${2:VAR}" },
+            { "trigger": "PACK\tPACK", "contents": "PACK ${1:VAR} WITH ${2:VAR}" },
+            { "trigger": "SEARCH\tSEARCH", "contents": "SEARCH ${1:VALUE} IN ${2:ARRAY_TO_SEARCH} TO ${3:ARRAY_SIZE} WITH ${4:POINTER_VAR}" }
 
             // Variables
       ]
