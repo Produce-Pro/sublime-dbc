@@ -12,19 +12,19 @@ variables:
   # Characters that break up variables/functions
   #  with lookahead to ignore .$
   variable_punctuation: '\$\.\@'
-  end: '(?![[:alnum:]_\.\$\@])'
+  end: '(?![[:alnum:]_{{variable_punctuation}}])'
   sp: '[ \t]'
+  sp_look: '(?={{sp}})'
   pre: ^{{sp}}+
-  numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+))'
-  operands: '((?i)by|to|of|from|using|with|in|into)'
-  constants: '(?i)not|eos|over|equal|less|zero'
-  valid_functions: '[[:alpha:]_\$][[:alnum:]_\.\$\@]*'
-  valid_variables: '[[:alpha:]_\$][[:alnum:]_\.\$\@]*'
+  numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+)){{end}}'
+  operands: '({{sp}}+((?i)by|to|of|from|using|with|in|into){{sp}}+|{{sp}}*,|:\n)'
+  constants: '((?i)not|eos|over|equal|less|zero){{end}}'
+  valid_functions: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
+  valid_variables: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
   alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
-  system_functions1: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest'
-  system_functions2: '(?i)clear|clearadr|set|reset'
-  system_functions3: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan|rep'
-  system_functions4: '(?i)move|fill|pack|unpack|packlen|type|append'
+  system_functions_x: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest|add'
+  system_functions_x_y: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan|rep'
+  sytem_functions_x_many: '(?i)move|fill|pack|unpack|packlen|type|append|clear|clearadr|set|reset'
 
 contexts:
 
@@ -105,13 +105,13 @@ contexts:
       scope: variable.parameter.dbc
 
   routine-definition:
-    - match: ^({{valid_functions}}){{sp}}+((?i)(routine|lroutine))
+    - match: ^{{valid_functions}}{{sp}}+((?i)(routine|lroutine))
       captures:
         1: entity.name.function.routine.dbc
         2: storage.type.routine.start.dbc
       push:
-        - routine-definition-body
         - routine-definition-parameters
+        - routine-definition-body
 
   routine-definition-parameters:
     - match: (?<!^)$\n
@@ -134,7 +134,7 @@ contexts:
     - include: nested
 
   label-definition:
-    - match: ^({{valid_functions}})(\n)
+    - match: ^{{valid_functions}}(\n)
       captures:
         1: entity.name.function.label.dbc
 
@@ -158,7 +158,7 @@ contexts:
 
 
   compiler-directive-args:
-    - include: arguments
+    - include: argument
     - match: (?<!^)$\n
       set: compiler-directive-body
 
@@ -177,7 +177,7 @@ contexts:
       scope: support.type.include.dbc
       push:
         - meta_scope: meta.include.dbc
-        - match: '({{valid_variables}})\n'
+        - match: '{{valid_variables}}\n'
           captures:
             1: string.unquoted
           pop: true
@@ -189,7 +189,7 @@ contexts:
       scope: support.type.chain.dbc
       push:
         - meta_scope: meta.chain.dbc
-        - match: '({{valid_variables}})\n'
+        - match: '{{valid_variables}}\n'
           captures:
             1: string.unquoted
           pop: true
@@ -197,7 +197,7 @@ contexts:
           pop: true
 
   constant-types:
-    - match: (^{{valid_variables}})({{sp}}+((?i)(define|equ)))
+    - match: '^{{valid_variables}}({{sp}}+((?i)(define|equ)))'
       captures:
         1: entity.name.constant.dbc
         2: storage.modifier.dbc
@@ -211,7 +211,7 @@ contexts:
         - include: eol-comments
 
   character-types:
-    - match: (^{{valid_variables}})({{sp}}+((?i)char|dim|init|gchar))
+    - match: '^{{valid_variables}}({{sp}}+((?i)char|dim|init|gchar))'
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
@@ -238,7 +238,7 @@ contexts:
           pop: true
 
   numeric-types:
-    - match: (^{{valid_variables}})({{sp}}+((?i)form|num|int|float|gform|gnum)\b)
+    - match: '^{{valid_variables}}({{sp}}+((?i)form|num|int|float|gform|gnum)\b)'
       captures:
         1: entity.name.type.dbc
         2: storage.type.dbc
@@ -267,11 +267,21 @@ contexts:
           pop: true
 
   label-types:
-    - match: (^{{valid_variables}})((?i){{sp}}+(external|label)\b)
+    - match: '^{{valid_functions}}((?i){{sp}}+(external|label)\b)'
       captures:
         1: entity.name.function.dbc
         2: storage.type.dbc
       push:
+        - match: \s\@
+          scope: storage.modifier.dbc
+          set:
+            - include: brackets
+            - match: ', '
+              scope: storage.modifier.dbc
+              set:
+                - include: eol-arguments
+
+            - include: eol-comments
         - match: '(?<!^)$\n'
           pop: true
         - match: \s\@
@@ -279,7 +289,7 @@ contexts:
         - include: eol-comments
 
   list-types:
-    - match: (^{{valid_variables}})((?i){{sp}}+((?i)list)\b)
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)list)\b)'
       captures:
         1: entity.name.list.dbc
         2: storage.type.dbc
@@ -337,16 +347,18 @@ contexts:
   if-keyword:
     - match: '{{pre}}+(?i)if{{end}}'
       scope: keyword.control.dbc
-      push: if-keyword-arguments
+      push:
+        - if-keyword-body
+        - if-arguments
 
   if-keyword-arguments:
     - include: if-arguments
-    - match: (?<!^)$\n
-      set: if-keyword-body
 
   if-arguments:
     - match: '{{constants}}'
       scope: constant.language.dbc
+    - match: (?<!^)$\n
+      pop: true
     - match: '\('
       scope: punctuation.section.parentheses.begin.dbc
       push: if-parentheses
@@ -378,7 +390,7 @@ contexts:
     - include: number-constants
     - match: '{{alter_paren_keywords}}'
       scope: support.function.builtin.dbc
-    - match: '({{valid_variables}})'
+    - match: '{{valid_variables}}'
       scope: variable.other.dbc
 
 
@@ -389,21 +401,19 @@ contexts:
       pop: true
     - match: '{{pre}}(?i)else if{{end}}'
       scope: keyword.control.dbc
-      set: if-keyword-arguments
+      push: if-keyword-arguments
     - match: '{{pre}}(?i)else{{end}}'
       scope: keyword.control.dbc
     - include: nested
 
   eol-if-keyword:
-    - match: (?i)if{{end}}
+    - match: '{{sp}}(?i)if{{sp_look}}'
       scope: keyword.control.dbc
-      push:
+      set:
         - meta_scope: meta.control.if.dbc
         - include: if-arguments
         - match: (?<!^)$\n
           pop: true
-    - match: ''
-      pop: true
 
   loop-keyword:
     - match: '{{pre}}(?i)loop{{end}}'
@@ -420,94 +430,30 @@ contexts:
     - match: '{{pre}}(?i)(continue|break|until){{end}}'
       scope: keyword.control.dbc
       push:
-        - match: "{{sp}}+"
-          push: eol-if-keyword
+        - include: eol-if-keyword
         - match: ''
           pop: true
 
   for-keyword:
-    - match: '{{pre}}(?i)for{{sp}}+'
-      scope: keyword.control.dbc
-      push: for-keyword1
-
-  for-keyword1:
-    - match: '{{valid_variables}}'
-      scope: variable.other.dbc
-      set: for-keyword2
-    - include: eol-invalid
-
-  for-keyword2:
-    - match: '{{sp}}+{{operands}}{{sp}}+'
-      scope: support.type.dbc
-      set: for-keyword3
-    - match: '{{sp}}*,{{sp}}*'
-      scope: punctuation.separator.dbc
-      set: for-keyword3
-    - include: eol-invalid
+    - match: '{{pre}}(?i)for{{sp_look}}'
+      scope: keyword.control.for.dbc
+      push:
+        - for-keyword-body
+        - for-keyword-args
 
 
-  for-keyword3:
+  for-keyword-args:
     - meta_scope: meta.control.for.arguments.dbc
-    - match: '{{valid_variables}}'
-      scope: variable.other.dbc
-      set: for-keyword4
-    - match: '{{numbers}}'
-      scope: constant.numeric.dbc
-      set: for-keyword4
-    - include: for-keyword3-parens
-    - include: eol-invalid
-
-  for-keyword3-parens:
-    - meta_scope: meta.control.for.arguments.dbc
-    - match: '\('
-      scope: punctuation.section.parentheses.begin.dbc
-      set:
-          - match: '\)'
-            scope: punctuation.section.parentheses.begin.dbc
-            set: for-keyword4
-          - include: for-keyword3-parens
-          - include: parentheses-body
-
-  for-keyword4:
-    - match: '{{sp}}+{{operands}}{{sp}}+'
-      scope: support.type.dbc
-      set: for-keyword5
-    - match: '{{sp}}*,{{sp}}*'
-      scope: punctuation.separator.dbc
-      set: for-keyword5
-    - include: eol-invalid
-
-  for-keyword5:
-    - meta_scope: meta.control.for.arguments.dbc
-    - match: '{{valid_variables}}'
-      scope: variable.other.dbc
-      set: for-keyword-body
-    - match: '{{numbers}}'
-      scope: constant.numeric.dbc
-      set: for-keyword-body
-    - include: for-keyword5-parens
-    - include: eol-invalid
-
-  for-keyword5-parens:
-    - match: '\('
-      scope: punctuation.section.parentheses.begin.dbc
-      set:
-          - match: '\)'
-            scope: punctuation.section.parentheses.begin.dbc
-            set: for-keyword-body
-          - include: for-keyword5-parens
-          - include: parentheses-body
+    - include: eol-arguments
 
   for-keyword-body:
-    - match: \n
-      set:
-        - meta_scope: meta.control.for.dbc
-        - match: '{{pre}}(?i)repeat{{end}}'
-          scope: keyword.control.dbc
-          pop: true
-        - include: interloop-keywords
-        - include: nested
-    - include: eol-invalid
+    - meta_scope: meta.control.for.dbc
+    - match: '{{pre}}(?i)repeat{{end}}'
+      scope: keyword.control.dbc
+      pop: true
+    - include: interloop-keywords
+    - include: nested
+
 
   switch-keyword:
     - match: '{{pre}}(?i)switch{{end}}'
@@ -560,6 +506,11 @@ contexts:
     - match: '{{numbers}}'
       scope: constant.numeric.dbc
 
+  operand-seperators:
+    - match: '{{operands}}'
+      scope: support.type.dbc
+      push: argument
+
   brackets:
     - match: \[
       scope: punctuation.section.brackets.begin.dbc
@@ -568,7 +519,7 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.dbc
           pop: true
-        - include: eol-arguments
+        - include: argument
 
   expression-seperators:
     - match: '{{sp}}*,{{sp}}*'
@@ -576,47 +527,58 @@ contexts:
     - match: '{{sp}}*:$\n'
       scope: punctuation.separator.dbc
 
-  operand-seperators:
-    - match: '{{sp}}+{{operands}}'
-      scope: support.type.dbc
+  arg-variable:
+    - match: '{{valid_variables}}'
+      captures:
+        1: variable.other.dbc
+      push:
+        - include: brackets
+        - match: ''
+          pop: true
 
-  eol-arguments:
-    - include: arguments
-    - match: (?<!^)$\n
-      pop: true
-
-  arguments:
-    - include: expression-seperators
-    - match: '{{numbers}}'
-      scope: constant.numeric.dbc
+  argument:
+    - meta_scope: meta.argument.dbc
+    - include: number-constants
+    - include: flag-constants
     - match: '~{{valid_functions}}'
       scope: variable.function.dbc
-    - match: '({{valid_variables}})(\=)'
+    - match: '{{valid_variables}}(\=)'
       captures:
         1: variable.parameter.dbc
         2: keyword.operator.assignment.dbc
-    - match: '({{valid_variables}})'
-      captures:
-        1: variable.other.dbc
-    - match: \(
-      scope: punctuation.section.parentheses.begin.dbc
-      push: arg-parens
 
+    - include: arg-variable
+    - include: arg-parens
+    - match: '{{end}}'
+      pop: true
+    - match: (?<!^)$\n
+      pop: true
 
   arg-parens:
-    - meta_scope: meta.parens.arguments.dbc
-    - match: \)
-      scope: punctuation.section.parentheses.end.dbc
-      pop: true
-    - include: parentheses-body
     - match: \(
       scope: punctuation.section.parentheses.begin.dbc
-      push: arg-parens
-    - match: '{{sp}}*:$\n'
-      scope: punctuation.separator.dbc
+      push:
+        - meta_scope: meta.argument.parens.dbc
+        - match: \)
+          scope: punctuation.section.parentheses.end.dbc
+          pop: true
+        - include: parentheses-body
+        - include: arg-parens
+        - match: '{{sp}}*:$\n'
+          scope: punctuation.separator.dbc
+        - match: (?<!^)$\n
+          scope: invalid.illegal.dbc
+          pop: true
+
+  eol-arguments:
+    - include: operand-seperators
+    - match: '{{sp}}'
+      push: argument
     - match: (?<!^)$\n
-      scope: invalid.illegal.dbc
       pop: true
+
+
+
 
   function-keywords:
     - include: call-keywords
@@ -624,42 +586,29 @@ contexts:
       captures:
         1: keyword.control.flow.dbc
       push:
+        - include: eol-if-keyword
+        - include: eol-arguments
 
-        - match: "{{sp}}+"
-          set: eol-if-keyword
-        - match: ''
-          pop: true
-    - match: '{{pre}}(?i)(goto)({{sp}}+{{valid_functions}})'
+    - match: '{{pre}}(?i)(goto)({{sp}}+{{valid_functions}}{{end}})'
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.dbc
       push:
         - meta_scope: meta.function-call.dbc
-        - match: '{{sp}}'
-          set: eol-if-keyword
-        - match: '(?<!^)$\n'
-          pop: true
+        - include: eol-if-keyword
+        - include: eol-arguments
 
   call-keywords:
-    - match: '{{pre}}(?i)(call)({{sp}}+{{valid_functions}})'
+    - match: '{{pre}}(?i)(call)({{sp}}+{{valid_functions}}{{end}})'
       captures:
         1: keyword.control.flow.dbc
         2: variable.function.dbc
       push:
-      - meta_scope: meta.function-call.dbc
-      - match: (?<!^)$\n
-        pop: true
-      - match: '{{sp}}+(?i)with{{sp}}+'
-        scope: support.type.dbc
-        set:
-          - meta_scope: meta.function-call.arguments.dbc
-          - include: eol-arguments
-      - match: '{{sp}}'
-        set: eol-if-keyword
-      - match: ''
-        pop: true
+        - meta_scope: meta.function-call.dbc
+        - include: eol-if-keyword
+        - include: eol-arguments
 
-    - match: '{{pre}}((?i)(branch|perform){{end}})'
+    - match: '{{pre}}((?i)(branch|perform){{sp_look}})'
       captures:
         1: keyword.control.flow.dbc
       push:
@@ -676,7 +625,7 @@ contexts:
               pop: true
 
   support-functions:
-    - match: '{{pre}}((?i)setflag{{end}})'
+    - match: '{{pre}}((?i)setflag{{sp_look}})'
       captures:
         1: support.function.builtin.dbc
       push:
@@ -685,7 +634,7 @@ contexts:
         - match: (?<!^)$\n
           pop: true
 
-    - match: '{{pre}}((?i)(load|store){{end}})'
+    - match: '{{pre}}((?i)(load|store){{sp_look}})'
       captures:
         1: support.function.builtin.dbc
       push:
@@ -700,38 +649,23 @@ contexts:
             - match: (?<!^)$\n
               pop: true
 
-    - match: '{{pre}}((?i)(display|print){{end}})'
+    - match: '{{pre}}((?i)(display|print){{sp_look}})'
       captures:
         1: support.function.builtin.dbc
-      push:
-        - include: arguments
-        - match: (?<!^)$\n
-          pop: true
+      push: eol-arguments
 
     # function x
-    - match: '{{pre}}({{system_functions1}}){{sp}}'
+    - match: '{{pre}}({{system_functions_x}}){{sp_look}}'
       captures:
         1: support.function.builtin.dbc
       push:
-        - match: '{{numbers}}'
-          scope: constant.numeric.dbc
-        - match: '{{valid_variables}}'
-          scope: variable.other.dbc
-        - match: (?<!^)$\n
+        - include: argument
+        - match: \n
           pop: true
 
-
-    # function x,y,z
-    - match: '{{pre}}({{system_functions2}}){{sp}}'
-      captures:
-        1: support.function.builtin.dbc
-      push:
-        - include: arguments
-        - match: (?<!^)$\n
-          pop: true
 
     # function x to y
-    - match: '{{pre}}({{system_functions3}}){{sp}}'
+    - match: '{{pre}}({{system_functions_x_y}}){{sp_look}}'
       captures:
         1: support.function.builtin.dbc
       push:
@@ -744,20 +678,16 @@ contexts:
           pop: true
 
     # function x to y,z,...
-    - match: '{{pre}}({{system_functions4}}){{sp}}'
+    - match: '{{pre}}({{sytem_functions_x_many}}){{sp_look}}'
       captures:
         1: support.function.builtin.dbc
-      push:
-        - include: arguments
-        - include: operand-seperators
-        - match: (?<!^)$\n
-          pop: true
+      push: eol-arguments
 
     # function x to y [giving z]
 
 
   verb-call:
-    - match: '{{pre}}({{valid_functions}}){{sp}}'
+    - match: '{{pre}}({{valid_functions}}){{sp_look}}'
       captures:
         1: variable.function.dbc
       push:
