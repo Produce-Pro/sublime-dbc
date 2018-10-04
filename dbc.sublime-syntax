@@ -22,9 +22,7 @@ variables:
   valid_functions: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
   valid_variables: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
   alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
-  system_functions_x: '(?i)retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest|add'
-  system_functions_x_y: '(?i)moveadr|chop|trim|squeeze|replace|movelabel|scan|rep'
-  sytem_functions_x_many: '(?i)move|fill|pack|unpack|packlen|type|append|clear|clearadr|set|reset'
+  system_functions: '(?i)(retcount|clearlabel|testadr|testlabel|flagrest|flagrestore|staterest|staterestore|traprest|traprestore|statesave|winsave|flagsave|winrestore|winrest|charsave|charrestore|charrest|statesize|winsize|scrnsave|scrnrestore|scrnrest|add|print|display|moveadr|chop|trim|squeeze|replace|movelabel|scan|rep|move|fill|pack|unpack|packlen|type|append|clear|clearadr|set|reset|close|closeall|debug|divide|loadmod|movefptr|movelabel|movelength|movelptr|movelv|movesize|movevl|multiply|replace|rollout|scan|search|shutdown|stop|subtract|unload|wait|keywords|deletek|open|read|readgplk|readkg|readkglk|readkgp|readkp|readkplk|readks|readkslk|readlk|write)'
 
 contexts:
 
@@ -637,41 +635,11 @@ contexts:
             - match: (?<!^)$\n
               pop: true
 
-    - match: '{{pre}}((?i)(display|print){{sp_look}})'
+    - match: '{{pre}}{{system_functions}}{{sp_look}}'
       captures:
         1: support.function.builtin.dbc
       push: eol-arguments
 
-    # function x
-    - match: '{{pre}}({{system_functions_x}}){{sp_look}}'
-      captures:
-        1: support.function.builtin.dbc
-      push:
-        - include: argument
-        - match: \n
-          pop: true
-
-
-    # function x to y
-    - match: '{{pre}}({{system_functions_x_y}}){{sp_look}}'
-      captures:
-        1: support.function.builtin.dbc
-      push:
-        - match: '{{numbers}}'
-          scope: constant.numeric.dbc
-        - match: '{{valid_variables}}'
-          scope: variable.other.dbc
-        - include: operand-seperators
-        - match: (?<!^)$\n
-          pop: true
-
-    # function x to y,z,...
-    - match: '{{pre}}({{sytem_functions_x_many}}){{sp_look}}'
-      captures:
-        1: support.function.builtin.dbc
-      push: eol-arguments
-
-    # function x to y [giving z]
 
 
   verb-call:
