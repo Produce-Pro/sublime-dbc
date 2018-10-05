@@ -86,6 +86,8 @@ LIST@          LIST @
 
 . <- - meta.list.dbc
 
+
+
 SOH$LST        LIST
 .                 ^ meta.function.dbc meta.type.dbc storage.type.dbc
 SOHSONO        CHAR 8        SONO          1-    8 S/O no
@@ -189,6 +191,12 @@ CHAR_ARRAY     CHAR 30[4], INITIAL "TEST",STUFF,"OUT",WELL
      #IFDEF POHDEF
           CONTINUE
      #ENDIF
+
+     BRANCH FORM2 OF BOL,CHARGES,CREDITS,ENTRY,INVOICE,LINES,ORDER:
+          PICK,SEARCH,SHIP,VIEW,VOID,AIRWAY,TIMES,LAST,CONFSALE,LOG:
+          TRIP,NAME,LOOKUP,BROWSE,PAY,BARLABEL,MULTI_BAR,ATTACHMENTS:
+          UPLOAD,LINKS,MERGEPRINT,PRINT,AR,ALLO,CONTAINERS,COPY:
+          CUSTMAST,DEPT,LABEL
 
      REPEAT
 .    ^  meta.control.loop.dbc keyword.control.loop.dbc - meta.control.for.dbc

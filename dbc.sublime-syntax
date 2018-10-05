@@ -588,11 +588,6 @@ contexts:
         - match: ''
           pop: true
 
-  arg-function:
-    - match: '{{valid_variables}}'
-      captures:
-        1: variable.other.dbc
-
   argument:
     - meta_scope: meta.argument.dbc
     - include: number-constants
@@ -637,7 +632,14 @@ contexts:
   eol-function-arguments:
     - include: operand-seperators
     - match: '{{sp}}'
-      push: arg-function
+      push:
+        - match: '{{valid_variables}}'
+          captures:
+            1: variable.function.dbc
+        - match: '{{end}}'
+          pop: true
+        - match: (?<!^)$\n
+          pop: true
     - match: (?<!^)$\n
       pop: true
 
@@ -671,21 +673,10 @@ contexts:
         - include: eol-if-keyword
         - include: eol-arguments
 
-    - match: '{{pre}}((?i)(branch|perform){{sp_look}})'
+    - match: '{{pre}}((?i)(branch|perform){{end}})'
       captures:
         1: keyword.control.flow.dbc
-      push:
-        - meta_scope: meta.function-call.dbc
-        - match: '{{sp}}+{{valid_variables}}'
-          scope: variable.other.dbc
-          set:
-            - meta_scope: meta.function-call.arguments.dbc
-            - include: expression-seperators
-            - match: '{{valid_functions}}'
-              scope: variable.function.dbc
-            - include: operand-seperators
-            - match: (?<!^)$\n
-              pop: true
+      push: eol-function-arguments
 
   support-functions:
     - match: '{{pre}}((?i)setflag{{sp_look}})'
