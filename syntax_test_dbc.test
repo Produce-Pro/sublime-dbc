@@ -8,6 +8,21 @@
 .     ^ support.type.include.dbc
 .         ^ meta.include.dbc string.unquoted
 
+
+TOTAL.FILE     FILE TEXT, VAR=65500
+LIST.FILE      FILE TEXT, VAR=65500
+CAT.FILE       FILE TEXT, VAR=65500
+LABEL.FILE     FILE TEXT, VAR=65500
+
+.
+
+.Filename variables
+FILENAME_MAX_SIZE$  EQU 80
+TMP.FILENAME        CHAR FILENAME_MAX_SIZE$
+TAG.FILENAME        CHAR FILENAME_MAX_SIZE$
+TAG.FILENAME_PAGE   CHAR FILENAME_MAX_SIZE$
+TABLES.FILENAME_    CHAR FILENAME_MAX_SIZE$[LTX.TABLES.MAX$]
+
 TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 . <- entity.name.function.routine.dbc
 .               ^ storage.type.routine.start.dbc
@@ -20,6 +35,9 @@ TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 .    ^ variable.parameter.dbc
 .        ^ punctuation.separator.dbc
 .          ^ variable.parameter.dbc
+
+CHAR_SET CHAR 10, INITIAL "asdf"
+CHAR_SET FORM 10, INITIAL 100
 
 VAR.MAX$ DEFINE 2
 VAR.MAX$ EQU 2
@@ -50,7 +68,7 @@ TEST_EXTERNAL EXTERNAL
 FORMATTED_CHAR CHAR 30, INITIAL "YES"
 UPDATE_CHAR EXTERNAL
 
-SIZE.X FORM 5.2
+SIZE.X FORM VAR.MAX$[VAR.MAX$]
 
 FORMATVERB VERB ARRAY=ANY,TYPE=CVAR,SIZE=NVAR,SIZE2=NVAR
 . <- meta.function.dbc entity.name.function.verb.dbc - meta.function.parameters.dbc
@@ -63,13 +81,13 @@ RANDOM.LABEL
      RETURN
 
 LIST@          LIST @
-. <- meta.function.dbc meta.list.dbc entity.name.list.dbc
-.              ^ meta.function.dbc meta.list.dbc storage.type.dbc
+. <- meta.function.dbc meta.type.dbc entity.name.list.dbc
+.              ^ meta.function.dbc meta.type.dbc storage.type.dbc
 
 . <- - meta.list.dbc
 
 SOH$LST        LIST
-.                 ^ meta.function.dbc meta.list.dbc storage.type.dbc
+.                 ^ meta.function.dbc meta.type.dbc storage.type.dbc
 SOHSONO        CHAR 8        SONO          1-    8 S/O no
 SOHCUST        CHAR 6        CUST          9-   14 Customer
 SOHSHIP        CHAR 6        SHIP         15-   20 Ship to

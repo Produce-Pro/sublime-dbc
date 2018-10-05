@@ -140,11 +140,14 @@ contexts:
     - include: standard-types
     - include: label-types
     - include: list-types
+    - include: file-types
+    - include: varlist-type
 
   standard-types:
     - include: constant-types
     - include: character-types
     - include: numeric-types
+    - include: var-types
 
   compiler-directive:
     - meta_scope: meta.preprocessor.dbc
@@ -223,7 +226,7 @@ contexts:
       push:
         - meta_scope: meta.type.dbc
         - include: brackets
-        - include: type-details
+        - include: type-def
         - match: (?<!^)$\n
           pop: true
         - include: eol-comments
@@ -237,7 +240,7 @@ contexts:
       push:
         - meta_scope: meta.type.dbc
         - include: brackets
-        - include: type-details
+        - include: type-def
         - match: (?<!^)$\n
           pop: true
         - include: eol-comments
@@ -261,7 +264,7 @@ contexts:
         1: entity.name.list.dbc
         2: storage.type.dbc
       push:
-        - meta_scope: meta.list.dbc
+        - meta_scope: meta.type.dbc
         - match: '\@'
           scope: storage.modifier.dbc
           pop: true
@@ -276,22 +279,52 @@ contexts:
   var-types:
     - match: '^{{valid_functions}}((?i){{sp}}+(var){{sp}}+)'
       captures:
-        1: entity.name.function.dbc
+        1: entity.name.type.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc
         - include: brackets
-        - include: type-details
+        - include: type-def
         - match: '(?<!^)$\n'
           pop: true
         - include: eol-comments
+
+  file-types:
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)file|ifile|afile|pfile|comfile){{end}})'
+      captures:
+        1: entity.name.interface.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}+\@'
+          scope: storage.modifier.dbc
+        - match: '(?<!^)${{sp}}*\n'
+          pop: true
+        - match: '{{sp_look}}'
+          set: eol-arguments
+
+  varlist-type:
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)varlist){{end}})'
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}+\@'
+          scope: storage.modifier.dbc
+          pop: true
+        - match: ''
+          set: eol-arguments
+
+
+
 
   address-types:
     - match: '\@'
       scope: storage.modifier.dbc
 
-  type-details:
-    - meta_scope: meta.type.details.dbc
+  type-def:
+    - meta_scope: meta.type.def.dbc
     - match: '{{operands}}({{sp}}*((?i)initial))?'
       captures:
         1: support.type.dbc
@@ -299,6 +332,32 @@ contexts:
       set: eol-arguments
     - include: number-constants
     - include: address-types
+    - include: type-def-constants
+
+  type-def-brackets:
+    - match: \[
+      scope: punctuation.section.brackets.begin.dbc
+      push:
+        - meta_scope: meta.type.def.brackets.dbc
+        - match: \]
+          scope: punctuation.section.brackets.end.dbc
+          pop: true
+        - match: ''
+          push:
+              - include: type-def-constants
+              - match: '{{end}}'
+                pop: true
+              - match: (?<!^)$\n
+                pop: true
+
+  type-def-constants:
+    - match: '{{valid_variables}}'
+      captures:
+        1: variable.other.constant
+      push:
+        - include: type-def-brackets
+        - match: ''
+          pop: true
 
   statements:
     - include: compiler-directive
@@ -529,6 +588,11 @@ contexts:
         - match: ''
           pop: true
 
+  arg-function:
+    - match: '{{valid_variables}}'
+      captures:
+        1: variable.other.dbc
+
   argument:
     - meta_scope: meta.argument.dbc
     - include: number-constants
@@ -570,6 +634,12 @@ contexts:
     - match: (?<!^)$\n
       pop: true
 
+  eol-function-arguments:
+    - include: operand-seperators
+    - match: '{{sp}}'
+      push: arg-function
+    - match: (?<!^)$\n
+      pop: true
 
 
 
