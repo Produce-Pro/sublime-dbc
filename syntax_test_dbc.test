@@ -62,7 +62,11 @@ RANDOM.LABEL
 . <- meta.function.dbc entity.name.function.label.dbc
      RETURN
 
-.LIST@          LIST @
+LIST@          LIST @
+. <- meta.function.dbc meta.list.dbc entity.name.list.dbc
+.              ^ meta.function.dbc meta.list.dbc storage.type.dbc
+
+. <- - meta.list.dbc
 
 SOH$LST        LIST
 .                 ^ meta.function.dbc meta.list.dbc storage.type.dbc

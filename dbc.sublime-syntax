@@ -262,7 +262,9 @@ contexts:
         2: storage.type.dbc
       push:
         - meta_scope: meta.list.dbc
-        - include: address-types
+        - match: '\@'
+          scope: storage.modifier.dbc
+          pop: true
         - match: '(?<!^)$\n'
           set:
           - meta_scope: meta.list.dbc
