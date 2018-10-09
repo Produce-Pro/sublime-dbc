@@ -19,7 +19,7 @@
             // Variables
 
             // FP related
-            { "trigger": "QUERY.\tFILECODE QUERY", "contents": "QUERY.${1:XXX1} ${2:<FILTERS>}\nLOOP\n\tNEXT.${1:XXX}\n\tBREAK IF OVER\nREPEAT" }
+            { "trigger": "QUERY.\tFILECODE QUERY", "contents": "QUERY.${1:XXX1} ${2:<FILTERS>}\nLOOP\n\tCALL NEXT.${1:XXX}\n\tBREAK IF OVER\nREPEAT" }
       ]
 }
 
