@@ -1,0 +1,14 @@
+<snippet>
+	<description>DB/C Switch</description>
+	<content><![CDATA[
+SWITCH ${1:VAR}
+	CASE ${2:VALUE}
+ENDSWITCH
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>SWITCH</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
+
+

@@ -1,0 +1,15 @@
+<snippet>
+	<description>QUERY FP Filecode</description>
+	<content><![CDATA[
+QUERY.${1:XXX1} ${2:FIELD=X}
+LOOP
+	CALL NEXT.$1
+	BREAK IF OVER
+	$0
+REPEAT
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>QUERY.</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
