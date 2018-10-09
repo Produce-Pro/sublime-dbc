@@ -38,6 +38,10 @@ TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
 
 CHAR_SET CHAR 10, INITIAL "asdf"
 CHAR_SET FORM 10, INITIAL 100
+.                   ^ meta.type.dbc storage.modifier.dbc
+CHAR_SET FORM 10:
+     INITIAL 100
+.         ^ meta.type.dbc storage.modifier.dbc
 
 VAR.MAX$ DEFINE 2
 VAR.MAX$ EQU 2
