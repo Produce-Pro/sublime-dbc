@@ -14,9 +14,12 @@
             // Functions
             { "trigger": "MOVE\tMOVE", "contents": "MOVE ${1:VAR} TO ${2:VAR}" },
             { "trigger": "PACK\tPACK", "contents": "PACK ${1:VAR} WITH ${2:VAR}" },
-            { "trigger": "SEARCH\tSEARCH", "contents": "SEARCH ${1:VALUE} IN ${2:ARRAY_TO_SEARCH} TO ${3:ARRAY_SIZE} WITH ${4:POINTER_VAR}" }
+            { "trigger": "SEARCH\tSEARCH", "contents": "SEARCH ${1:VALUE} IN ${2:ARRAY_TO_SEARCH} TO ${3:ARRAY_SIZE} WITH ${4:POINTER_VAR}" },
 
             // Variables
+
+            // FP related
+            { "trigger": "QUERY.\tFILECODE QUERY", "contents": "QUERY.${1:XXX1} ${2:<FILTERS>}\nLOOP\n\tNEXT.${1:XXX}\n\tBREAK IF OVER\nREPEAT" }
       ]
 }
 
