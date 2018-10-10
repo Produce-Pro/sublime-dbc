@@ -1,0 +1,17 @@
+<snippet>
+	<description>DB/C Local Routine Definition</description>
+	<content><![CDATA[
+*
+.
+. ${1:ROUTINE}
+.
+$1 LROUTINE
+	$0
+	RETURN.NOTEOS
+	ENDROUTINE ./$1
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>LROUTINE</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
