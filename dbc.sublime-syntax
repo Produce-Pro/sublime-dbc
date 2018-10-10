@@ -1,0 +1,722 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: dbc
+file_extensions:
+  - PRG
+  - TXT
+  - VRB
+scope: source.dbc
+
+variables:
+  # Characters that break up variables/functions
+  #  with lookahead to ignore .$
+  variable_punctuation: '\$\.\@'
+  end: '(?![[:alnum:]_{{variable_punctuation}}])'
+  sp: '[ \t]'
+  sp_look: '(?={{sp}})'
+  pre: ^{{sp}}+
+  numbers: '(-)?(([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+)){{end}}'
+  operands: '({{sp}}+((?i)by|to|of|from|using|with|in|into){{sp}}+|{{sp}}*,|:\n)'
+  constants: '((?i)not|eos|over|equal|less|zero){{end}}'
+  valid_functions: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
+  valid_variables: '([[:alpha:]_\$][[:alnum:]_\.\$\@]*)'
+  alter_paren_keywords: '(?i)(sqznum|form|char|squeeze|trim|size|length|chop){{end}}'
+  system_functions: '(?i)(add|append|beep|bump|change|charrest|charrestore|charsave|chop|clear|clearadr|clearendkey|clearlabel|clock|close|closeall|cmatch|cmove|comclr|comctl|comopen, comclose|compare|compareadr|comtst|comwait|console|count|debug|delete|deletek|destroy|disable|display|divide|draw|edit|empty|enable|endset|erase|execute|extend|filepi|fill|flagrest|flagrestore|flagsave|flusheof|format|fposit|get|getcolor|getcursor|getendkey|getglobal|getlabel|getmodules|getname|getobject|getpaperbins|getparm|getposition|getprinters|getwindow|hide|insert|keyin|keywords|lcmove|lenset|link|loadadr|loadlabel|loadmod|loadparm|make|makeglobal|makevar|match|mod|move|moveadr|movefptr|movelabel|movelabel|movelength|movelptr|movelv|movesize|movevl|multiply|nformat|noeject|open|pack|packlen|pause|ploadmod|popreturn|prepare|print|pushreturn|put|putfirst|query|read|readgplk|readkg|readkglk|readkgp|readkp|readkplk|readks|readkslk|readlk|recv|recvclr|release|rename|rep|replace|replace|reposit|reset|resetparm|retcount|rollout|rotate|scan|scan|scrnrest|scrnrestore|scrnsave|search|send|sendclr|set|setendkey|setlptr|setnull|sformat|show|shutdown|sound|splclose|splopen|splopt|sqlcode|sqlexec|sqlmsg|squeeze|staterest|staterestore|statesave|statesize|stop|storeadr|storelabel|subtract|tabpage|test|testadr|testlabel|traprest|traprestore|trim|type|unlink|unload|unlock|unpack|unpacklist|updatab|update|wait|weof|winrest|winrestore|winsave|winsize|write)'
+
+contexts:
+
+  prototype:
+    - include: line-comments
+    - include: strings
+
+  main:
+    - include: variable-punctuation
+    - include: verb-definition
+    - include: routine-definition
+    - include: label-definition
+    - include: variable-definitions
+    - include: invalid-keywords
+    - include: debug
+    - include: statements
+
+  # Nested scope, interloop and others are valid
+  nested:
+    - include: variable-punctuation
+    - include: verb-definition
+    - include: routine-definition
+    - include: label-definition
+    - include: variable-definitions
+    - include: interloop-keywords
+    - include: debug
+    - include: statements
+
+  line-comments:
+    # Comments begin with a [# .] and finish at the end of the line
+    - match: '^[\.\*]'
+      scope: punctuation.definition.comment.dbc
+      push:
+        - meta_scope: comment.line.dbc
+        - match: (?<!^)$\n
+          pop: true
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.dbc
+      push:
+        - meta_scope: string.quoted.double.dbc
+        - match: '\#.'
+          scope: constant.character.escape.dbc
+        - match: '"'
+          scope: punctuation.definition.string.end.dbc
+          pop: true
+        - match: (?<!^)(?=$\n)
+          scope: invalid.illegal.dbc
+          pop: true
+
+  variable-punctuation:
+    - match: '{{variable_punctuation}}'
+      scope: punctuation.definition.variable.dbc
+
+  verb-definition:
+    - match: '^{{valid_functions}}{{sp}}+((?i)(verb))'
+      captures:
+        1: entity.name.function.verb.dbc
+        2: storage.type.verb.dbc
+      push:
+          - meta_scope: meta.function.dbc
+          - match: (?<!^)$\n
+            pop: true
+          - match: ''
+            set: verb-definition-parameters
+
+  verb-definition-parameters:
+    - meta_scope: meta.function.parameters.dbc
+    - match: (?<!^)$\n
+      pop: true
+    - include: expression-seperators
+    - match: ([\#\=])\b((?i)(array|afile|any|carray|carray1|carray2|carray3|cnvar|cnvarlit|comfile|cvar|cvarlit|device|file|ifile|image|list|label|nvar|nvarlit|varlit)\b)
+      captures:
+        1: keyword.operator.assignment.dbc
+        2: variable.language.dbc
+    - match: '{{valid_variables}}'
+      scope: variable.parameter.dbc
+
+  routine-definition:
+    - match: ^{{valid_functions}}{{sp}}+((?i)(routine|lroutine){{end}})
+      captures:
+        1: entity.name.function.routine.dbc
+        2: storage.type.routine.start.dbc
+      push:
+        - routine-definition-body
+        - routine-definition-parameters
+
+  routine-definition-parameters:
+    - match: (?<!^)$\n
+      pop: true
+    - match: '{{sp}}'
+      set:
+      - meta_scope: meta.function.parameters.dbc
+      - match: ({{valid_variables}}|~{{valid_functions}})
+        scope: variable.parameter.dbc
+      - include: expression-seperators
+      - match: '(?<!^)$\n'
+        pop: true
+
+
+  routine-definition-body:
+    - meta_scope: meta.function.dbc
+    - match: '{{pre}}(?i)endroutine'
+      scope: storage.type.routine.end.dbc
+      set: eol-comments
+    - include: nested
+
+  label-definition:
+    - match: ^{{valid_functions}}(\n)
+      captures:
+        1: entity.name.function.label.dbc
+
+  variable-definitions:
+    - include: standard-types
+    - include: label-types
+    - include: list-types
+    - include: file-types
+    - include: varlist-type
+
+  standard-types:
+    - include: constant-types
+    - include: character-types
+    - include: numeric-types
+    - include: var-types
+
+  compiler-directive:
+    - meta_scope: meta.preprocessor.dbc
+    - match: '{{pre}}[\#\%](?i)(ifz|ifnz|ifdef|ifdef|ifdef|ifndef|ifndef|ifndef|iflabel|ifnlabel|elseif|if){{sp_look}}'
+      scope: storage.modifier.dbc
+      push:
+        - compiler-directive-body
+        - compiler-directive-arguments
+    - match: '{{pre}}([\#\%]\w*)'
+      captures:
+        1: invalid.illegal.dbc
+
+
+  compiler-directive-arguments:
+    - match: '{{sp}}*{{valid_variables}}'
+      captures:
+        1: variable.other.dbc
+    - match: (?<!^)$\n
+      pop: true
+
+  compiler-directive-body:
+    - meta_scope: meta.compiler-directive.dbc
+    - match: '{{pre}}(?i)[\#\%]((?i)(endif))'
+      scope: storage.modifier.dbc
+      set:
+        - include: eol-comments
+        - match: ''
+          pop: true
+    - match: '{{pre}}(?i)[\#\%]((?i)(else))'
+      scope: storage.modifier.dbc
+    - include: nested
+
+  file-includes:
+    - match: '{{pre}}(?i)inc{{sp}}'
+      scope: support.type.include.dbc
+      push:
+        - meta_scope: meta.include.dbc
+        - match: '{{valid_variables}}\n'
+          captures:
+            1: string.unquoted
+          pop: true
+        - match: '(?<!^)$\n'
+          pop: true
+
+  chain-to:
+    - match: '{{pre}}(?i)chain{{sp}}'
+      scope: support.type.chain.dbc
+      push:
+        - meta_scope: meta.chain.dbc
+        - match: '{{valid_variables}}\n'
+          captures:
+            1: string.unquoted
+          pop: true
+        - match: '(?<!^)$\n'
+          pop: true
+
+  constant-types:
+    - match: '^{{valid_variables}}({{sp}}+((?i)(define|equ)){{sp}}+)'
+      captures:
+        1: entity.name.constant.dbc
+        2: storage.modifier.dbc
+
+      push:
+        - meta_scope: meta.type.constant.dbc
+        - include: number-constants
+        - match: '(?<!^)$\n'
+          pop: true
+        - include: eol-comments
+
+  character-types:
+    - match: '^{{valid_variables}}({{sp}}+((?i)char|dim|init|gchar){{sp}}+)'
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+
+      push:
+        - meta_scope: meta.type.dbc
+        - include: brackets
+        - include: type-def
+        - match: (?<!^)$\n
+          pop: true
+        - include: eol-comments
+
+  numeric-types:
+    - match: '^{{valid_variables}}({{sp}}+((?i)form|num|int|float|gform|gnum){{sp}}+)'
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+
+      push:
+        - meta_scope: meta.type.dbc
+        - include: brackets
+        - include: type-def
+        - match: (?<!^)$\n
+          pop: true
+        - include: eol-comments
+
+  label-types:
+    - match: '^{{valid_functions}}((?i){{sp}}+(external|label){{sp}}*)'
+      captures:
+        1: entity.name.function.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - include: brackets
+        - include: address-types
+        - match: '(?<!^)$\n'
+          pop: true
+        - include: eol-comments
+
+  list-types:
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)list){{sp}}*)'
+      captures:
+        1: entity.name.list.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '\@'
+          scope: storage.modifier.dbc
+          pop: true
+        - match: '(?<!^)$\n'
+          set:
+          - meta_scope: meta.list.dbc
+          - match: '^{{sp}}+(?i)(listend\b)'
+            scope: storage.type.dbc
+            pop: true
+          - include: standard-types
+
+  var-types:
+    - match: '^{{valid_functions}}((?i){{sp}}+(var){{sp}}+)'
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - include: brackets
+        - include: type-def
+        - match: '(?<!^)$\n'
+          pop: true
+        - include: eol-comments
+
+  file-types:
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)file|ifile|afile|pfile|comfile){{end}})'
+      captures:
+        1: entity.name.interface.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}+\@'
+          scope: storage.modifier.dbc
+        - match: '(?<!^)${{sp}}*\n'
+          pop: true
+        - match: '{{sp_look}}'
+          set: eol-arguments
+
+  varlist-type:
+    - match: '^{{valid_variables}}((?i){{sp}}+((?i)varlist){{end}})'
+      captures:
+        1: entity.name.type.dbc
+        2: storage.type.dbc
+      push:
+        - meta_scope: meta.type.dbc
+        - match: '{{sp}}+\@'
+          scope: storage.modifier.dbc
+          pop: true
+        - match: ''
+          set: eol-arguments
+
+
+
+
+  address-types:
+    - match: '\@'
+      scope: storage.modifier.dbc
+
+  type-def:
+    - meta_scope: meta.type.def.dbc
+    - match: '{{operands}}({{sp}}*((?i)initial))?'
+      captures:
+        1: support.type.dbc
+        3: storage.modifier.dbc
+      set: eol-arguments
+    - include: number-constants
+    - include: address-types
+    - include: type-def-constants
+
+  type-def-brackets:
+    - match: \[
+      scope: punctuation.section.brackets.begin.dbc
+      push:
+        - meta_scope: meta.type.def.brackets.dbc
+        - match: \]
+          scope: punctuation.section.brackets.end.dbc
+          pop: true
+        - match: ''
+          push:
+              - include: type-def-constants
+              - match: '{{end}}'
+                pop: true
+              - match: (?<!^)$\n
+                pop: true
+
+  type-def-constants:
+    - match: '{{valid_variables}}'
+      captures:
+        1: variable.other.constant
+      push:
+        - include: type-def-brackets
+        - match: ''
+          pop: true
+
+  statements:
+    - include: compiler-directive
+    - include: file-includes
+    - include: chain-to
+    - include: if-keyword
+    - include: loop-keyword
+    - include: for-keyword
+    - include: switch-keyword
+    - include: function-keywords
+    - include: support-functions
+    - include: verb-call
+
+  eol-comments:
+    - match: ''
+      set:
+        - meta_scope: comment.line.dbc
+        - match: (?<!^)$\n
+          pop: true
+
+  eol-invalid:
+    - match: ''
+      set:
+        - meta_scope: invalid.illegal.dbc
+        - match: (?<!^)$\n
+          pop: true
+
+
+  invalid-keywords:
+    - match: '{{pre}}(?i)(continue|break|repeat|endif|endswitch|endroutine){{end}}'
+      captures:
+        1: invalid.illegal.dbc
+    - match: (?i)[\%\#]endif
+      captures:
+        1: invalid.illegal.dbc
+
+  debug:
+    - match: '{{pre}}(?i)(debug{{end}})'
+      captures:
+        1: invalid.illegal.dbc
+
+  if-keyword:
+    - match: '{{pre}}+(?i)if{{end}}'
+      scope: keyword.control.dbc
+      push:
+        - if-keyword-body
+        - if-arguments
+
+  if-keyword-arguments:
+    - include: if-arguments
+
+  if-arguments:
+    - match: '{{constants}}'
+      scope: constant.language.dbc
+    - match: (?<!^)$\n
+      pop: true
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      push: if-parentheses
+
+  if-parentheses:
+    - meta_scope: meta.parens.if.dbc
+    - match: '\)'
+      scope: punctuation.section.parentheses.end.dbc
+      pop: true
+    - match: '{{constants}}'
+      scope: constant.language.dbc
+    - match: '(<\=|>\=|\=|<|>|\!\=)'
+      scope: keyword.operator.comparison.dbc
+    - match: '(?i)(or|and)'
+      scope: keyword.operator.word.dbc
+    - include: parentheses-body
+    - match: '\('
+      scope: punctuation.section.parentheses.begin.dbc
+      push: if-parentheses
+    - match: '{{sp}}*:$\n'
+      scope: punctuation.separator.dbc
+    - match: (?<!^)(?=$\n)
+      scope: invalid.illegal.dbc
+      pop: true
+
+  parentheses-body:
+    - match: (\+|\-|/|%|\||\^|~|!|\*)
+      scope: keyword.operator.arithmetic.dbc
+    - include: number-constants
+    - match: '{{alter_paren_keywords}}'
+      scope: support.function.builtin.dbc
+    - match: '{{valid_variables}}'
+      scope: variable.other.dbc
+
+
+  if-keyword-body:
+    - meta_scope: meta.control.if.dbc
+    - match: '{{pre}}(?i)endif{{end}}'
+      scope: keyword.control.dbc
+      pop: true
+    - match: '{{pre}}(?i)else if{{end}}'
+      scope: keyword.control.dbc
+      push: if-keyword-arguments
+    - match: '{{pre}}(?i)else{{end}}'
+      scope: keyword.control.dbc
+    - include: interloop-keywords
+    - include: nested
+
+  eol-if-keyword:
+    - match: '{{sp}}(?i)if{{sp_look}}'
+      scope: keyword.control.dbc
+      set:
+        - meta_scope: meta.control.if.dbc
+        - include: if-arguments
+        - match: (?<!^)$\n
+          pop: true
+
+  loop-keyword:
+    - match: '{{pre}}(?i)loop{{end}}'
+      scope: keyword.control.dbc
+      push:
+        - meta_scope: meta.control.loop.dbc
+        - match: '{{pre}}(?i)repeat{{end}}'
+          scope: keyword.control.loop.dbc
+          pop: true
+        - include: interloop-keywords
+        - include: nested
+
+  interloop-keywords:
+    - match: '{{pre}}(?i)(continue|break|until){{end}}'
+      scope: keyword.control.dbc
+      push:
+        - include: eol-if-keyword
+        - match: ''
+          pop: true
+
+  for-keyword:
+    - match: '{{pre}}(?i)for{{sp_look}}'
+      scope: keyword.control.for.dbc
+      push:
+        - for-keyword-body
+        - for-keyword-args
+
+
+  for-keyword-args:
+    - meta_scope: meta.control.for.arguments.dbc
+    - include: eol-arguments
+
+  for-keyword-body:
+    - meta_scope: meta.control.for.dbc
+    - match: '{{pre}}(?i)repeat{{end}}'
+      scope: keyword.control.for.dbc
+      pop: true
+    - include: interloop-keywords
+    - include: nested
+
+
+  switch-keyword:
+    - match: '{{pre}}(?i)switch{{sp_look}}'
+      scope: keyword.control.switch.dbc
+      push:
+        - switch-keyword-body
+        - switch-keyword-args
+
+  switch-keyword-args:
+    - meta_scope: meta.control.switch.arguments.dbc
+    - include: eol-arguments
+
+  switch-keyword-body:
+    - meta_scope: meta.control.switch.dbc
+    - match: '{{pre}}(?i)endswitch{{end}}'
+      scope: keyword.control.switch.dbc
+      pop: true
+    - match: '{{pre}}(?i)case{{end}}'
+      scope: keyword.control.switch.dbc
+      push: case-keyword-parameters
+    - match: '{{pre}}(?i)default{{end}}'
+      scope: keyword.control.switch.dbc
+    - include: interloop-keywords
+    - include: nested
+
+  case-keyword-parameters:
+    - meta_scope: meta.control.case.dbc
+    - match: '({{sp}}OR{{end}}|{{sp}}*\|)'
+      scope: keyword.operator.arithmetic.c
+    - match: '{{sp}}'
+      push: argument
+    # - match: '~{{valid_functions}}'
+    #   scope: variable.function.dbc
+    # - match: '{{valid_variables}}'
+    #   scope: variable.other.dbc
+    - match: (?<!^)$\n
+      pop: true
+
+
+  flag-constants:
+    - match: '{{constants}}'
+      scope: constant.language.dbc
+
+  number-constants:
+    - match: '{{numbers}}'
+      scope: constant.numeric.dbc
+
+  operand-seperators:
+    - match: '{{operands}}'
+      scope: support.type.dbc
+      push: argument
+
+  brackets:
+    - match: \[
+      scope: punctuation.section.brackets.begin.dbc
+      push:
+        - meta_scope: meta.brackets.dbc
+        - match: \]
+          scope: punctuation.section.brackets.end.dbc
+          pop: true
+        - match: ''
+          push: argument
+
+  expression-seperators:
+    - match: '{{sp}}*,{{sp}}*'
+      scope: punctuation.separator.dbc
+    - match: '{{sp}}*:$\n'
+      scope: punctuation.separator.dbc
+
+  arg-variable:
+    - match: '{{valid_variables}}'
+      captures:
+        1: variable.other.dbc
+      push:
+        - include: brackets
+        - match: ''
+          pop: true
+
+  argument:
+    - meta_scope: meta.argument.dbc
+    - include: number-constants
+    - include: flag-constants
+    - match: '~{{valid_functions}}'
+      scope: variable.function.dbc
+    - match: '{{valid_variables}}(\=)'
+      captures:
+        1: variable.parameter.dbc
+        2: keyword.operator.assignment.dbc
+
+    - include: arg-variable
+    - include: arg-parens
+    - match: '{{end}}'
+      pop: true
+    - match: (?<!^)$\n
+      pop: true
+
+  arg-parens:
+    - match: \(
+      scope: punctuation.section.parentheses.begin.dbc
+      set:
+        - meta_scope: meta.argument.parens.dbc
+        - match: \)
+          scope: punctuation.section.parentheses.end.dbc
+          pop: true
+        - include: parentheses-body
+        - include: arg-parens
+        - match: '{{sp}}*:$\n'
+          scope: punctuation.separator.dbc
+        - match: (?<!^)(?=$\n)
+          scope: invalid.illegal.dbc
+          pop: true
+
+  eol-arguments:
+    - include: operand-seperators
+    - match: '{{sp}}'
+      push: argument
+    - match: (?<!^)$\n
+      pop: true
+
+  eol-function-arguments:
+    - include: operand-seperators
+    - match: '{{sp}}'
+      push:
+        - match: '{{valid_variables}}'
+          captures:
+            1: variable.function.dbc
+        - match: '{{end}}'
+          pop: true
+        - match: (?<!^)$\n
+          pop: true
+    - match: (?<!^)$\n
+      pop: true
+
+
+
+  function-keywords:
+    - include: call-keywords
+    - match: '{{pre}}((?i)(return|noreturn){{end}})'
+      captures:
+        1: keyword.control.flow.dbc
+      push:
+        - include: eol-if-keyword
+        - include: eol-arguments
+
+    - match: '{{pre}}(?i)(goto)({{sp}}+{{valid_functions}}{{end}})'
+      captures:
+        1: keyword.control.flow.dbc
+        2: variable.function.dbc
+      push:
+        - meta_scope: meta.function-call.dbc
+        - include: eol-if-keyword
+        - include: eol-arguments
+
+  call-keywords:
+    - match: '{{pre}}(?i)(call)({{sp}}+{{valid_functions}}{{end}})'
+      captures:
+        1: keyword.control.flow.dbc
+        2: variable.function.dbc
+      push:
+        - meta_scope: meta.function-call.dbc
+        - include: eol-if-keyword
+        - include: eol-arguments
+
+    - match: '{{pre}}((?i)(branch|perform){{end}})'
+      captures:
+        1: keyword.control.flow.dbc
+      push: eol-function-arguments
+
+  support-functions:
+    - match: '{{pre}}((?i)setflag{{sp_look}})'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - match: '{{sp}}+{{constants}}'
+          scope: constant.language.dbc
+        - match: (?<!^)$\n
+          pop: true
+
+    - match: '{{pre}}((?i)(load|store){{sp_look}})'
+      captures:
+        1: support.function.builtin.dbc
+      push:
+        - meta_scope: meta.arguments.dbc
+        - match: '{{sp}}+{{valid_variables}}'
+          scope: variable.other.dbc
+          set:
+            - include: expression-seperators
+            - match: '{{valid_variables}}'
+              scope: variable.other.dbc
+            - include: operand-seperators
+            - match: (?<!^)$\n
+              pop: true
+
+    - match: '{{pre}}{{system_functions}}{{sp_look}}'
+      captures:
+        1: support.function.builtin.dbc
+      push: eol-arguments
+
+
+
+  verb-call:
+    - match: '{{pre}}({{valid_functions}}){{end}}'
+      captures:
+        1: variable.function.dbc
+      push:
+        - meta_scope: meta.function-call.dbc
+        - match: ''
+          set:
+            - meta_scope: meta.function-call.arguments.dbc
+            - include: eol-arguments

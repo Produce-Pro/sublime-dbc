@@ -1,0 +1,14 @@
+<snippet>
+	<description>DB/C For Loop</description>
+	<content><![CDATA[
+FOR ${1:VAR} FROM ${2:NUM_OR_VAR} TO ${4:NUM/VAR}
+	$0
+REPEAT
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>FOR</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
+
+
