@@ -3,7 +3,7 @@
 ### What is this repository for? ###
 
 * DBC language syntax highlighting and settings for Sublime 3.0
-* Version 0.3
+* Version 0.4
 
 ### How do I get set up? ###
 
