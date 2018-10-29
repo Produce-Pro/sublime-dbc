@@ -1,9 +1,10 @@
 <snippet>
 	<description>DB/C Routine Definition</description>
 	<content><![CDATA[
+
 *
 .
-. ${1:ROUTINE}
+. ${1:$TM_CURRENT_LINE}
 .
 $1 ROUTINE
 	$0

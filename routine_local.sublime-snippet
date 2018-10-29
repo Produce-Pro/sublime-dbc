@@ -1,9 +1,10 @@
 <snippet>
 	<description>DB/C Local Routine Definition</description>
 	<content><![CDATA[
+
 *
 .
-. ${1:ROUTINE}
+. ${1:$TM_CURRENT_LINE}
 .
 $1 LROUTINE
 	$0
