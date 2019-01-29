@@ -1,0 +1,19 @@
+<snippet>
+	<description>Verb GETPARM loop</description>
+	<content><![CDATA[
+LOOP
+	GETPARM
+	GETPARM KEYWORD, VAR
+	UNTIL OVER
+	SWITCH KEYWORD
+		CASE $2
+			$3
+		$0
+	ENDSWITCH
+REPEAT
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>GETPARM</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
