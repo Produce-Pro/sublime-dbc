@@ -2,9 +2,9 @@
 	<description>DB/C Routine Definition</description>
 	<content><![CDATA[
 
-*
-.
-. ${1:$TM_CURRENT_LINE}
+*+*
+. @TITLE ${1:${TM_CURRENT_LINE/ //g}}
+. @DESC
 .
 $1 ROUTINE
 	$0

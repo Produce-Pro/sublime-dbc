@@ -16,6 +16,8 @@
 .
 $1 VERB $2
 
+$1 EXTERNAL
+
 ]]></content>
 	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
 	<tabTrigger>VERB</tabTrigger>

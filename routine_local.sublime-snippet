@@ -4,7 +4,7 @@
 
 *
 .
-. ${1:$TM_CURRENT_LINE}
+. ${1:${TM_CURRENT_LINE/ //g}}
 .
 $1 LROUTINE
 	$0
