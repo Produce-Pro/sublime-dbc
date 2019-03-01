@@ -1,18 +1,24 @@
 <snippet>
-	<description>Verb GETPARM loop</description>
+	<description>Verb definition</description>
 	<content><![CDATA[
-LOOP
-	GETPARM KEYWORD, VAR
-	UNTIL OVER
-	SWITCH KEYWORD
-		CASE $1
-			$2
-		$0
-	ENDSWITCH
-REPEAT
+
+*+*
+. @TITLE $1
+. @DESC $0
+.
+. @IN
+.
+. @IN/OUT
+.
+. @OUT
+.
+. @FLAGS
+.
+$1 VERB $2
+
 ]]></content>
 	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
-	<tabTrigger>GETPARM</tabTrigger>
+	<tabTrigger>VERB</tabTrigger>
 	<!-- Optional: Set a scope to limit where the snippet will trigger -->
 	<scope>source.dbc</scope>
 </snippet>
