@@ -1,0 +1,205 @@
+<snippet>
+	<description>DB/C PD FIX Program Template</description>
+	<content><![CDATA[
+
+*
+.
+.	$TM_FILENAME
+. 	$1
+.	Created by: ${2:$TM_FULLNAME}
+.	Created from pd_fix_program Sublime template
+
+.
+*
+. USAGE Notes
+.	- All file changes should only occur with FILES.WRITE set
+.	- Uses layout. All columns are included in order by default
+.	- Comment out FILE.WRITE to hide prompt
+
+. Fix program description
+FIX.TITLE INIT "$1"
+. Determines if program actually makes file changes if set to != 0
+FILES.WRITE FORM "0"
+
+*
+.Optional variables, uncomment to use
+.
+. Count records processed/errored/skipped/etc (any filled in printed in trailer)
+.FIX.COUNT_MAX\$ EQU 10
+.FIX.COUNT FORM 5[FIX.COUNT_MAX\$]
+
+. Addition info concerning record in layout)
+.FIX.INFO CHAR 80
+
+	INC COMMON
+.
+	INC CTDEF
+.
+	INC WRKDEF
+	INC SPLDEF
+	INC LAYDEF
+	INC PDDEF
+.
+Z.${3} EQU 1
+.
+	INC ${3}DEF
+
+
+
+FIX.PROG CHAR 12
+
+PSTART
+	CALL GETPGM WITH FIX.PROG
+	IF (CHOP CAOPER = NULL)
+		CLOCK USER TO CAOPER
+	ENDIF
+	IF (CHOP CAINTL = NULL)
+		MOVE (CAOPER ! 3) TO CAINTL
+	ENDIF
+	PACK CAPROG WITH CAINTL,"_FIX"
+
+	INFOBOX TITLE=CAPROG
+	INFOBOX DESC=("    Program: " + FIX.PROG)
+
+	IF (CHOP FIX.TITLE = NULL)
+		MESSAGE ACK,TEXT="Set fix program title!!"
+		GOTO EXIT
+	ENDIF
+	INFOBOX DESC=("Description: " + FIX.TITLE)
+
+	#IFDEF FILES.WRITE
+	CLEAR FILES.WRITE
+	MENUYN TITLE="Make file changes?":
+		TRAILER=("    Program: " + FIX.PROG):
+		TRAILER=("Description: " + FIX.TITLE)
+	GOTO EXIT IF EOS
+	IF EQUAL
+		SET FILES.WRITE
+	ENDIF
+
+	IF (FILES.WRITE)
+		INFOBOX DESC= ("*** File changes enabled ***")
+		INFOBOX DESC= ("   Pausing 2 seconds before starting file changes...")
+		PAUSE 2
+	ENDIF
+	#ENDIF ./IFDEF FILES.WRITE
+
+	CALL REPORT.START
+
+	CALL FIX.LOOP
+
+	CALL PRINT.TRAILER
+
+	INFOBOX END
+	LAYOUT.ENDPGM
+	REPORT.END
+
+
+EXIT
+	IF (CHOP CAEXIT != NULL)
+		CHAIN CAEXIT
+	ENDIF
+	SHUTDOWN
+
+FIX.LOOP LROUTINE
+	DEBUG
+	INFOBOX DESC=("OPENING ${3}")
+	QUERY.${3}1
+	LOOP
+		CALL NEXT.${3}1
+		BREAK IF OVER
+
+		CALL BK${3}
+		INFOBOX DESC=("${3} "), TEXT=${3}KEY
+
+		$0
+
+		DEBUG
+		CALL PT${3} IF (FILES.WRITE)
+		LAYOUT.PRTDET
+	REPEAT
+
+	RETURN
+	ENDROUTINE ./FIX.LOOP
+
+
+REPORT.START LROUTINE
+LAY.COLS FORM 4
+
+	CLEAR LAY.COLS
+	LAYOUT.INTPGM
+
+	CALL LAY.ADDCOL WITH "KEY",${3}KEY
+	CALL LAY.ADDCOL WITH "${4:VAR}",$3$4
+
+	#IFDEF FIX.INFO
+	CALL LAY.ADDCOL WITH "INFO",FIX.INFO
+	#ENDIF ./IFDEF FIX.INFO
+
+	LAYOUT.MAKDEF ALL
+
+	LAYOUT.INTRPT HEADER=PRINT.HEADER
+
+	MOVE "B" TO CAPRNT
+
+	REPORT STD,PRINTER=CAPRNT,TITLE=FIX.TITLE,PROGRAM=CAPROG:
+		LTITLE=("    Program: " + FIX.PROG):
+		LTITLE=("Description: " + FIX.TITLE)
+	RETURN
+
+LAY.ADDCOL LROUTINE LAY.HDR@,LAY.VAR@,LAY.TYPE@
+LAY.HDR@ CHAR @
+LAY.VAR@ VAR @
+LAY.TYPE@ CHAR @
+LAY.COLM CHAR 4
+LAY.TYPE CHAR 1
+	FILL " " IN LAY.TYPE
+	TESTADR LAY.TYPE@
+	IF NOT OVER
+		MOVE LAY.TYPE@ TO LAY.TYPE
+	ENDIF
+
+	ADD 1 TO LAY.COLS
+	NUMERIC_JUSTIFY IN=(CHAR LAY.COLS),OUT=LAY.COLM,ZEROFILL="Y"
+
+	LAYOUT.INTFLD COLM=LAY.COLM,HDR=LAY.HDR@,VAR=LAY.VAR@,TYPE=LAY.TYPE
+
+	RETURN.NOTEOS
+	ENDROUTINE ./LAY.ADDCOL
+
+PRINT.HEADER
+	#IFDEF FILES.WRITE
+	IF (FILES.WRITE)
+		PRINT ("*** File changes enabled ***")
+	ENDIF
+	#ENDIF ./IFDEF FILES.WRITE
+	RETURN
+
+PRINT.TRAILER LROUTINE
+TRL.PTR FORM 2
+	#IFDEF FIX.COUNT_MAX\$
+	FOR TRL.PTR FROM 1 TO FIX.COUNT_MAX\$
+		CONTINUE IF (FIX.COUNT[TRL.PTR] = 0)
+		PRINT "COUNT ",TRL.PTR," ",FIX.COUNT[TRL.PTR]
+	REPEAT
+	#ENDIF ./IFDEF FIX.COUNT_MAX\$
+	RETURN.NOTEOS
+	ENDROUTINE ./PRINT.TRAILER
+	ENDROUTINE ./REPORT.START
+
+.
+	INC CTIO
+.
+	INC ${3}IO
+.
+	INC WRKIO
+	INC SPLIO
+	INC LAYINC
+	INC PDINC
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>FIX</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
