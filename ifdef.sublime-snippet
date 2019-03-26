@@ -1,0 +1,14 @@
+<snippet>
+	<description>DB/C IFDEF compiler directive</description>
+	<content><![CDATA[
+#IFDEF $1
+$0
+#ENDIF ./IFDEF $1
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>IFDEF</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.dbc</scope>
+</snippet>
+
+
