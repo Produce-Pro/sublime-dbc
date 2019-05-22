@@ -1,12 +1,11 @@
 <snippet>
-	<description>DB/C IF</description>
+	<description>DB/C Error Message (Ack)</description>
 	<content><![CDATA[
-IF (${1:TRUE})
-	$0
-ENDIF
+MESSAGE ERROR, COLOR=7, BGCOLOR=4, ACK:
+	TEXT=$0
 ]]></content>
 	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
-	<tabTrigger>IF</tabTrigger>
+	<tabTrigger>ACKER</tabTrigger>
 	<!-- Optional: Set a scope to limit where the snippet will trigger -->
 	<scope>source.dbc</scope>
 </snippet>

@@ -103,9 +103,16 @@ contexts:
       scope: variable.parameter.dbc
 
   routine-definition:
-    - match: ^{{valid_functions}}{{sp}}+((?i)(routine|lroutine){{end}})
+    - match: ^{{valid_functions}}{{sp}}+((?i)(routine){{end}})
       captures:
         1: entity.name.function.routine.dbc
+        2: storage.type.routine.start.dbc
+      push:
+        - routine-definition-body
+        - routine-definition-parameters
+    - match: ^{{valid_functions}}{{sp}}+((?i)(lroutine){{end}})
+      captures:
+        1: entity.name.function.lroutine.dbc
         2: storage.type.routine.start.dbc
       push:
         - routine-definition-body
@@ -207,7 +214,7 @@ contexts:
   constant-types:
     - match: '^{{valid_variables}}({{sp}}+((?i)(define|equ)){{sp}}+)'
       captures:
-        1: entity.name.constant.dbc
+        1: entity.name.type.constant.dbc
         2: storage.modifier.dbc
 
       push:
@@ -220,7 +227,7 @@ contexts:
   character-types:
     - match: '^{{valid_variables}}({{sp}}+((?i)char|dim|init|gchar){{sp}}+)'
       captures:
-        1: entity.name.type.dbc
+        1: entity.name.type.char.dbc
         2: storage.type.dbc
 
       push:
@@ -234,7 +241,7 @@ contexts:
   numeric-types:
     - match: '^{{valid_variables}}({{sp}}+((?i)form|num|int|float|gform|gnum){{sp}}+)'
       captures:
-        1: entity.name.type.dbc
+        1: entity.name.type.form.dbc
         2: storage.type.dbc
 
       push:
@@ -248,7 +255,7 @@ contexts:
   label-types:
     - match: '^{{valid_functions}}((?i){{sp}}+(external|label){{sp}}*)'
       captures:
-        1: entity.name.function.dbc
+        1: entity.name.function.var.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc
@@ -261,7 +268,7 @@ contexts:
   list-types:
     - match: '^{{valid_variables}}((?i){{sp}}+((?i)list){{sp}}*)'
       captures:
-        1: entity.name.list.dbc
+        1: entity.name.type.list.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc
@@ -279,7 +286,7 @@ contexts:
   var-types:
     - match: '^{{valid_functions}}((?i){{sp}}+(var){{sp}}+)'
       captures:
-        1: entity.name.type.dbc
+        1: entity.name.type.var.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc
@@ -306,7 +313,7 @@ contexts:
   varlist-type:
     - match: '^{{valid_variables}}((?i){{sp}}+((?i)varlist){{end}})'
       captures:
-        1: entity.name.type.dbc
+        1: entity.name.type.varlist.dbc
         2: storage.type.dbc
       push:
         - meta_scope: meta.type.dbc

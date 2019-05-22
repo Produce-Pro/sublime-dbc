@@ -24,7 +24,7 @@ TAG.FILENAME_PAGE   CHAR FILENAME_MAX_SIZE$
 TABLES.FILENAME_    CHAR FILENAME_MAX_SIZE$[LTX.TABLES.MAX$]
 
 TEST$._ROUTINE ROUTINE VAR,VAR@,~LABEL:
-. <- entity.name.function.routine.dbc
+. <- entity.name.function.routine.global.dbc
 .               ^ storage.type.routine.start.dbc
 .                      ^ variable.parameter.dbc
 .                          ^ variable.parameter.dbc
@@ -124,8 +124,9 @@ SOHWGHT        FORM 7.3      WGHT        217-  227 Total weight
 SOHNEWI        CHAR 1        YN          228-  228 New items added?
 SOHBLDF        CHAR 1[3]     YN          229-  229 Build pending flag?
 SOHIVCT        FORM 2                    230-  231 Invoice printed count
-               LISTEND
+               LISTEND ./test
 .                  ^ meta.function.dbc meta.list.dbc storage.type.dbc
+.                        ^ comment.line.dbc
 
 
 BOOL_TEST      FORM 1[3], 1,0,1
@@ -146,7 +147,7 @@ CHAR_ARRAY     CHAR 30[4], INITIAL "TEST",STUFF,"OUT",WELL
      CLEAR SIZE.X,SIZE.X2,TYPE.FORM,TYPE,EQUAL
 .    ^ support.function.builtin.dbc
 .                                   ^ variable.other.dbc
-     FILL " " IN TYPE
+     FILL " " IN TYPE,SOH$LST
 .    ^^^ support.function.builtin.dbc
 .                 ^^^ variable.other.dbc
      LOOP
@@ -272,11 +273,12 @@ TEST
 .      ^ storage.modifier.dbc
 .               ^ variable.other.dbc
      #ELSE
-TEST.SECONDROUTINE ROUTINE
-. ^ meta.function.dbc entity.name.function.routine.dbc
+TEST.SECONDROUTINE LROUTINE
+. ^ meta.function.dbc entity.name.function.routine.global.dbc
 .                   ^ meta.compiler-directive.dbc storage.type.routine.start.dbc
-     ENDROUTINE
+     ENDROUTINE ./testing
 .     ^ meta.function.dbc meta.function.dbc storage.type.routine.end.dbc
+.                   ^ comment.line.dbc
      #ENDIF .IFDEF SOHDEF
 
      IF (OVER

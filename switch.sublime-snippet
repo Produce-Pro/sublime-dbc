@@ -2,7 +2,7 @@
 	<description>DB/C Switch</description>
 	<content><![CDATA[
 SWITCH ${1:VAR}
-	CASE ${2:VALUE}
+	CASE ${0:VALUE}
 ENDSWITCH
 ]]></content>
 	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
