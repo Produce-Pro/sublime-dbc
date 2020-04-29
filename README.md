@@ -1,23 +1,24 @@
-# README #
+# sublime-dbc
 
-### What is this repository for? ###
+## Overview
 
-* DBC language syntax highlighting and settings for Sublime 3.0
-* Version 0.4
+[DB/C Language](http://dbcsoftware.com/) support for Sublime 3.0
 
-### How do I get set up? ###
+## Installation
 
-Create a dbc directory in sublime packages directory (Preferences -> Browse Packages)
-Copy to the files to the dbc directory
+### Install from git
 
+- Checkout repository
+- Run `yum install ppro-killpid` as root
 
-## TODO ##
+### Manually
 
-- fix invalid continue/endif etc
+- Create a dbc directory in sublime packages directory (Preferences -> Browse Packages)
+- Download this repository & copy to the files to the dbc directory
 
+## TODO
+
+- Fix invalid continue/endif etc
 - Indentation defaults
 - Trap functions
-
 - Find a way to override goto-definition word seperators
-	Will likely need to create a macro/custom command to replace F12 so that it selects the entire word instead of seperating it by '.'
-	https://forum.sublimetext.com/t/problem-with-goto-defintion/26228/6
