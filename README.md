@@ -8,8 +8,9 @@
 
 ### Install from git
 
-- Checkout repository
-- Run `yum install ppro-killpid` as root
+- Checkout repository in Sublime packages directory
+  - Windows: %APPDATA%\Sublime Text 3\Packages
+  - Mac: $HOME/Library/Application Support/Sublime Text 3/Packages
 
 ### Manually
 
